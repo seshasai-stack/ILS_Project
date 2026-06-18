@@ -13,7 +13,7 @@ export function SiteFooter() {
             </p>
             <div className="mt-6 h-px w-16 bg-gold/60" />
             <p className="mt-6 text-xs uppercase tracking-[0.28em] text-muted-foreground">
-              ILS 2026 &middot; December &middot; Hyderabad
+              ILS 2026 &middot; November &middot; Hyderabad
             </p>
           </div>
 
