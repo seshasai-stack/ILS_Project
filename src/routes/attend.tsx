@@ -94,8 +94,8 @@ function AttendPage() {
             >
               <div className="flex flex-col items-start">
                 <span className="text-[10px] uppercase tracking-[0.28em] text-gold">Audience A</span>
-                <span className="mt-1 font-serif text-lg">Members & Founders</span>
-                <span className="text-[11px] text-muted-foreground">By referral or press</span>
+                <span className="mt-1 font-serif text-lg">Members</span>
+                {/* <span className="text-[11px] text-muted-foreground">By referral or press</span> */}
               </div>
             </TabsTrigger>
             <TabsTrigger
@@ -104,8 +104,8 @@ function AttendPage() {
             >
               <div className="flex flex-col items-start">
                 <span className="text-[10px] uppercase tracking-[0.28em] text-gold">Audience B</span>
-                <span className="mt-1 font-serif text-lg">Partners, Sponsors, Speakers</span>
-                <span className="text-[11px] text-muted-foreground">Assessing fit & credibility</span>
+                <span className="mt-1 font-serif text-lg">Guests</span>
+                {/* <span className="text-[11px] text-muted-foreground">Assessing fit & credibility</span> */}
               </div>
             </TabsTrigger>
           </TabsList>

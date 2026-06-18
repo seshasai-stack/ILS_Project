@@ -6,7 +6,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "India Leadership Summit 2026 — Hyderabad" },
-      { name: "description", content: "India's most consequential gathering of ambitious entrepreneurs. ILS 2026 — December, Hyderabad." },
+      { name: "description", content: "India's most consequential gathering of ambitious entrepreneurs. ILS 2026 — November, Hyderabad." },
     ],
   }),
   component: Home,
@@ -36,7 +36,7 @@ function Home() {
         <GoldParticles count={22} />
 
         <div className="mx-auto max-w-6xl px-6 lg:px-10">
-          <p className="eyebrow reveal">ILS 2026 &middot; The Second Edition</p>
+          <p className="eyebrow reveal">ILS 2026 &middot; The Second Edition &middot; Coming Soon</p>
           <h1 className="reveal reveal-delay-1 mt-6 font-serif text-5xl leading-[1.05] tracking-tight sm:text-6xl md:text-7xl lg:text-[88px]">
             India&rsquo;s most <span className="gold-gradient-text italic">consequential</span>
             <br />
@@ -46,7 +46,11 @@ function Home() {
           </h1>
           <div className="reveal reveal-delay-2 mt-10 flex flex-wrap items-center gap-x-10 gap-y-4">
             <span className="text-sm uppercase tracking-[0.28em] text-muted-foreground">
-              December 2026
+              November 2026
+            </span>
+            <span className="h-px w-10 bg-gold/60" />
+            <span className="text-sm uppercase tracking-[0.28em] text-muted-foreground">
+              Novotel
             </span>
             <span className="h-px w-10 bg-gold/60" />
             <span className="text-sm uppercase tracking-[0.28em] text-muted-foreground">
@@ -56,10 +60,10 @@ function Home() {
 
           <div className="reveal reveal-delay-3 mt-12 flex flex-wrap items-center gap-6">
             <Link to="/attend"><span className="btn-gold">Register Now</span></Link>
-            <Link to="/speakers"><span className="btn-outline-gold">View Speakers</span></Link>
+            {/* <Link to="/speakers"><span className="btn-outline-gold">View Speakers</span></Link> */}
           </div>
 
-          <div className="reveal reveal-delay-4 mt-24 max-w-2xl">
+          {/* <div className="reveal reveal-delay-4 mt-24 max-w-2xl">
             <p className="text-sm uppercase tracking-[0.28em] text-muted-foreground">
               Confirmed for 2026
             </p>
@@ -73,7 +77,7 @@ function Home() {
                 </span>
               ))}
             </div>
-          </div>
+          </div> */}
         </div>
       </section>
 
