@@ -6,7 +6,7 @@ export function FloatingRegister() {
 
   useEffect(() => {
     const onScroll = () => {
-      setVisible(window.scrollY > window.innerHeight * 0.25);
+       setVisible(window.scrollY > window.innerHeight * 0.25);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });

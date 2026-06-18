@@ -11,6 +11,7 @@ import {
 import appCss from "../styles.css?url";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { FloatingRegister } from "@/components/FloatingRegister";
 
 function NotFoundComponent() {
   return (
@@ -75,10 +76,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "India Leadership Summit 2026" },
-      { name: "description", content: "India's most consequential gathering of ambitious entrepreneurs and leaders. ILS 2026, November, Hyderabad." },
+      { name: "description", content: "India's most consequential gathering of ambitious entrepreneurs and leaders. ILS 2026, December, Hyderabad." },
       { name: "author", content: "CorporateConnections AP&TS" },
       { property: "og:title", content: "India Leadership Summit 2026" },
-      { property: "og:description", content: "A curated convening of India's most consequential entrepreneurs. November 2026." },
+      { property: "og:description", content: "A curated convening of India's most consequential entrepreneurs. December 2026." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
@@ -121,6 +122,7 @@ function RootComponent() {
           <Outlet />
         </main>
         <SiteFooter />
+        <FloatingRegister />
       </div>
     </QueryClientProvider>
   );

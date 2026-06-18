@@ -5,7 +5,7 @@ export const Route = createFileRoute("/summit")({
   head: () => ({
     meta: [
       { title: "The Summit — ILS 2026" },
-      { name: "description", content: "What ILS 2026 is, who is in the room, and how the day unfolds. November 2026, Hyderabad." },
+      { name: "description", content: "What ILS 2026 is, who is in the room, and how the day unfolds. December 2026, Hyderabad." },
     ],
   }),
   component: SummitPage,
@@ -21,15 +21,15 @@ const highlights = [
 ];
 
 const agenda = [
-  { time: "-", title: "Will Announce Shortly", who: "-" }
-  // { time: "10:00", title: "Opening Address", who: "Founding Chair, ILS" },
-  // { time: "10:45", title: "Keynote — The Capital Decade", who: "Confirmed speaker" },
-  // { time: "12:00", title: "Roundtables (Session I)", who: "Six parallel rooms" },
-  // { time: "13:30", title: "Curated Lunch", who: "Assigned seating" },
-  // { time: "15:00", title: "Fireside — Building for the Next India", who: "Two-chair format" },
-  // { time: "16:30", title: "Roundtables (Session II)", who: "Six parallel rooms" },
-  // { time: "18:30", title: "Closing Reflection", who: "Founding Chair" },
-  // { time: "19:30", title: "The Long Dinner", who: "Single seating" },
+  { time: "09:00", title: "Arrival & Quiet Breakfast", who: "Members only" },
+  { time: "10:00", title: "Opening Address", who: "Founding Chair, ILS" },
+  { time: "10:45", title: "Keynote — The Capital Decade", who: "Confirmed speaker" },
+  { time: "12:00", title: "Roundtables (Session I)", who: "Six parallel rooms" },
+  { time: "13:30", title: "Curated Lunch", who: "Assigned seating" },
+  { time: "15:00", title: "Fireside — Building for the Next India", who: "Two-chair format" },
+  { time: "16:30", title: "Roundtables (Session II)", who: "Six parallel rooms" },
+  { time: "18:30", title: "Closing Reflection", who: "Founding Chair" },
+  { time: "19:30", title: "The Long Dinner", who: "Single seating" },
 ];
 
 function SummitPage() {
@@ -39,7 +39,7 @@ function SummitPage() {
         <div className="mx-auto max-w-6xl px-6 lg:px-10">
           <p className="eyebrow">The Summit &middot; ILS 2026</p>
           <h1 className="mt-6 max-w-4xl font-serif text-5xl leading-tight md:text-6xl lg:text-7xl">
-            36 hrs. <span className="gold-gradient-text italic">One room.</span> The conversations that move the year.
+            One day. <span className="gold-gradient-text italic">One room.</span> The conversations that move the year.
           </h1>
 
           <div className="mt-16 grid gap-12 lg:grid-cols-12">
@@ -71,7 +71,7 @@ function SummitPage() {
                 <div className="gold-divider my-8" />
                 <div className="eyebrow">Edition</div>
                 <p className="mt-3 font-serif text-2xl">ILS 2026</p>
-                <p className="mt-1 text-sm text-muted-foreground">November &middot; Hyderabad</p>
+                <p className="mt-1 text-sm text-muted-foreground">December &middot; Hyderabad</p>
               </div>
             </aside>
           </div>

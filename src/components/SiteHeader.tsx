@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 const nav = [
   { to: "/", label: "Home" },
   { to: "/summit", label: "The Summit" },
-  // { to: "/speakers", label: "Speakers" },
+  { to: "/speakers", label: "Speakers" },
   { to: "/partners", label: "Partners" },
   { to: "/about", label: "About" },
 ] as const;
@@ -46,13 +46,15 @@ export function SiteHeader() {
               {n.label}
             </Link>
           ))}
-        </nav>
-
-        <div className="hidden items-center gap-4 md:flex">
-          <Link to="/attend">
-            <span className="btn-outline-gold">Register</span>
+          <span className="h-4 w-px bg-gold/25" aria-hidden="true" />
+          <Link
+            to="/attend"
+            className="text-xs uppercase tracking-[0.22em] text-muted-foreground transition-colors hover:text-gold"
+            activeProps={{ className: "text-gold" }}
+          >
+            Register
           </Link>
-        </div>
+        </nav>
 
         <div className="flex items-center gap-3 md:hidden">
           <button
@@ -83,8 +85,13 @@ export function SiteHeader() {
                 {n.label}
               </Link>
             ))}
-            <Link to="/attend" onClick={() => setOpen(false)} className="mt-2">
-              <span className="btn-outline-gold w-full">Register</span>
+            <span className="h-px w-full bg-gold/25" aria-hidden="true" />
+            <Link
+              to="/attend"
+              onClick={() => setOpen(false)}
+              className="text-xs uppercase tracking-[0.25em] text-muted-foreground hover:text-gold"
+            >
+              Register
             </Link>
           </nav>
         </div>
