@@ -1,0 +1,12 @@
+[build]
+  command = "bun install && bun run build"
+  publish = "dist/client"
+
+[build.environment]
+  BUN_VERSION = "1.1.38"
+  NODE_VERSION = "22"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
