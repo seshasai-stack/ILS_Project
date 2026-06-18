@@ -60,7 +60,7 @@ function Home() {
 
           <div className="reveal reveal-delay-3 mt-12 flex flex-wrap items-center gap-6">
             <Link to="/attend"><span className="btn-gold">Register Now</span></Link>
-            <Link to="/speakers"><span className="btn-outline-gold">View Speakers</span></Link>
+            {/* <Link to="/speakers"><span className="btn-outline-gold">View Speakers</span></Link> */}
           </div>
 
           {/* <div className="reveal reveal-delay-4 mt-24 max-w-2xl">

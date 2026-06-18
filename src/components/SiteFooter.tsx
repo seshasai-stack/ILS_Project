@@ -21,7 +21,7 @@ export function SiteFooter() {
             <div className="eyebrow mb-4">Navigate</div>
             <ul className="space-y-2.5 text-sm text-muted-foreground">
               <li><Link to="/summit" className="hover:text-gold">The Summit</Link></li>
-              <li><Link to="/speakers" className="hover:text-gold">Speakers</Link></li>
+              {/* <li><Link to="/speakers" className="hover:text-gold">Speakers</Link></li> */}
               <li><Link to="/attend" className="hover:text-gold">Attend</Link></li>
               <li><Link to="/partners" className="hover:text-gold">Partners</Link></li>
               <li><Link to="/about" className="hover:text-gold">About</Link></li>
