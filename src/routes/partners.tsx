@@ -34,7 +34,7 @@ function PartnersPage() {
           </p>
         </div>
 
-        <div className="mt-16 glass rounded-sm p-10">
+        {/* <div className="mt-16 glass rounded-sm p-10">
           <div className="eyebrow">Begin a Conversation</div>
           <h2 className="mt-3 font-serif text-3xl md:text-4xl">Aditi Rao</h2>
           <p className="mt-1 text-sm text-muted-foreground">Partnerships, ILS</p>
@@ -45,7 +45,7 @@ function PartnersPage() {
             partners@ils2026.in
             <span aria-hidden>&rarr;</span>
           </a>
-        </div>
+        </div> */}
       </div>
     </section>
   );
