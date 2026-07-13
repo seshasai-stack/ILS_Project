@@ -24,12 +24,14 @@ const audienceASchema = z.object({
   phone: z.string().trim().min(6, "Please enter a valid phone").max(30),
   organization: z.string().trim().min(2, "Please enter your company").max(150),
   designation: z.string().trim().min(2, "Please enter your role").max(100),
-  referredBy: z.string().trim().max(150).optional().or(z.literal("")),
+  // referredBy: z.string().trim().max(150).optional().or(z.literal("")),
   intent: z
     .string()
     .trim()
     .min(10, "A sentence or two helps us route this thoughtfully")
-    .max(800),
+    .max(800)
+    .optional()
+    .or(z.literal(""))
 });
 type AudienceAState = z.infer<typeof audienceASchema>;
 const initialA: AudienceAState = {
@@ -87,7 +89,7 @@ function AttendPage() {
         <div className="gold-divider my-12" />
 
         <Tabs defaultValue="a" className="w-full">
-          <TabsList className="mb-8 grid h-auto w-full grid-cols-1 gap-2 bg-transparent p-0 sm:grid-cols-2">
+          <TabsList className="mb-8 grid h-auto w-full grid-cols-1 gap-2 bg-transparent p-0 sm:grid-cols-1">
             <TabsTrigger
               value="a"
               className="rounded-sm border border-border bg-transparent px-4 py-4 text-left data-[state=active]:border-gold data-[state=active]:bg-gold/5 data-[state=active]:shadow-none"
@@ -98,16 +100,16 @@ function AttendPage() {
                 {/* <span className="text-[11px] text-muted-foreground">By referral or press</span> */}
               </div>
             </TabsTrigger>
-            <TabsTrigger
+            {/* <TabsTrigger
               value="b"
               className="rounded-sm border border-border bg-transparent px-4 py-4 text-left data-[state=active]:border-gold data-[state=active]:bg-gold/5 data-[state=active]:shadow-none"
             >
               <div className="flex flex-col items-start">
                 <span className="text-[10px] uppercase tracking-[0.28em] text-gold">Audience B</span>
-                <span className="mt-1 font-serif text-lg">Guests</span>
+                <span className="mt-1 font-serif text-lg">Guests</span> */}
                 {/* <span className="text-[11px] text-muted-foreground">Assessing fit & credibility</span> */}
-              </div>
-            </TabsTrigger>
+              {/* </div>
+            </TabsTrigger> */}
           </TabsList>
 
           <TabsContent value="a">
@@ -169,15 +171,15 @@ function AudienceAForm() {
         <Field label="Company" id="a-org" value={data.organization} onChange={(v) => update("organization", v)} error={errors.organization} />
         <Field label="Designation" id="a-role" value={data.designation} onChange={(v) => update("designation", v)} error={errors.designation} />
       </div>
-      <Field
+      {/* <Field
         label="Referred By (optional)"
         id="a-ref"
         value={data.referredBy ?? ""}
         onChange={(v) => update("referredBy", v)}
         error={errors.referredBy}
-      />
+      /> */}
       <TextareaField
-        label="What brings you to ILS?"
+        label="What brings you to ILS? (optional)"
         id="a-intent"
         value={data.intent}
         onChange={(v) => update("intent", v)}
