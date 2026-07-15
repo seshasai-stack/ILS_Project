@@ -3,6 +3,8 @@ import { useState } from "react";
 import { z } from "zod";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+const API_BASE_URL = "https://ils-backend-1.onrender.com";
+
 export const Route = createFileRoute("/attend")({
   head: () => ({
     meta: [
@@ -40,7 +42,6 @@ const initialA: AudienceAState = {
   phone: "",
   organization: "",
   designation: "",
-  referredBy: "",
   intent: "",
 };
 
@@ -129,27 +130,67 @@ function AudienceAForm() {
   const [data, setData] = useState<AudienceAState>(initialA);
   const [errors, setErrors] = useState<Partial<Record<keyof AudienceAState, string>>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   function update<K extends keyof AudienceAState>(k: K, v: string) {
     setData((d) => ({ ...d, [k]: v }));
   }
 
-  function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
     const result = audienceASchema.safeParse(data);
+
     if (!result.success) {
       const errs: Partial<Record<keyof AudienceAState, string>> = {};
+
       for (const issue of result.error.issues) {
         const key = issue.path[0] as keyof AudienceAState;
         errs[key] = issue.message;
       }
+
       setErrors(errs);
       return;
     }
-    setErrors({});
-    setSubmitted(true);
-    // TODO: wire to backend — sends confirmation to applicant + notification
-    //       to seshasai@corporateconnections-india.com with "Audience A — Member/Founder" copy.
+
+    try {
+      setErrors({});
+      setSubmitError("");
+      setIsSubmitting(true);
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/routes/submit-application`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(result.data),
+        }
+      );
+
+      const apiResponse = await response.json();
+
+      if (!response.ok || !apiResponse.success) {
+        throw new Error(
+          apiResponse.message || "Unable to submit your application"
+        );
+      }
+
+      setSubmitted(true);
+      setData(initialA);
+    } catch (error) {
+      console.error("Application submission failed:", error);
+
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : "Unable to submit your application"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   if (submitted) {
@@ -187,7 +228,19 @@ function AudienceAForm() {
         placeholder="A sentence or two. Helps us route thoughtfully."
       />
 
-      <FormFooter note="Reviewed by a human · Confirmation arrives shortly" />
+      {submitError && (
+        <div
+          role="alert"
+          className="rounded-sm border border-destructive/40 bg-destructive/10 px-4 py-3"
+        >
+          <p className="text-sm text-destructive">{submitError}</p>
+        </div>
+      )}
+
+      <FormFooter
+        note="Your application will be stored securely"
+        isSubmitting={isSubmitting}
+      />
     </form>
   );
 }
@@ -360,12 +413,22 @@ function TextareaField({
   );
 }
 
-function FormFooter({ note }: { note: string }) {
+function FormFooter({
+  note,
+  isSubmitting = false,
+}: {
+  note: string;
+  isSubmitting?: boolean;
+}) {
   return (
     <div className="flex flex-col items-start gap-4 pt-2 sm:flex-row sm:items-center sm:justify-between">
       <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">{note}</p>
-      <button type="submit" className="btn-gold">
-        Submit Application
+      <button
+        type="submit"
+        className="btn-gold disabled:cursor-not-allowed disabled:opacity-60"
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? "Submitting..." : "Submit Application"}
       </button>
     </div>
   );
