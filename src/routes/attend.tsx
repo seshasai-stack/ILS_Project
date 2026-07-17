@@ -184,7 +184,7 @@ function AudienceAForm() {
       setSubmitError("");
 
       const response = await fetch(
-        `${API_BASE_URL}/api/routes/create-payment`,
+        `${API_BASE_URL}/api/payment/create-payment`,
         {
           method: "POST",
           headers: {
