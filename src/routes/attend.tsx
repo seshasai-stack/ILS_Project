@@ -1,9 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const API_BASE_URL = "https://ils-backend-1.onrender.com";
+
+const REGISTRATION_FEE = 39_500;
+const GST_RATE = 18;
+const GST_AMOUNT = (REGISTRATION_FEE * GST_RATE) / 100;
+const TOTAL_AMOUNT = REGISTRATION_FEE + GST_AMOUNT;
+
+const formatINR = (amount: number) =>
+  new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(amount);
 
 export const Route = createFileRoute("/attend")({
   head: () => ({
@@ -129,7 +141,8 @@ function AttendPage() {
 function AudienceAForm() {
   const [data, setData] = useState<AudienceAState>(initialA);
   const [errors, setErrors] = useState<Partial<Record<keyof AudienceAState, string>>>({});
-  const [submitted, setSubmitted] = useState(false);
+  const [validatedData, setValidatedData] = useState<AudienceAState | null>(null);
+  const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
@@ -137,7 +150,7 @@ function AudienceAForm() {
     setData((d) => ({ ...d, [k]: v }));
   }
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const result = audienceASchema.safeParse(data);
@@ -154,51 +167,67 @@ function AudienceAForm() {
       return;
     }
 
+    setErrors({});
+    setSubmitError("");
+    setValidatedData(result.data);
+    setIsInvoiceOpen(true);
+  }
+
+  async function makePayment() {
+    if (!validatedData) {
+      setSubmitError("Please submit the form again.");
+      return;
+    }
+
     try {
-      setErrors({});
-      setSubmitError("");
       setIsSubmitting(true);
+      setSubmitError("");
 
       const response = await fetch(
-        `${API_BASE_URL}/api/routes/submit-application`,
+        `${API_BASE_URL}/api/routes/create-payment`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(result.data),
+          body: JSON.stringify(validatedData),
         }
       );
 
-      const apiResponse = await response.json();
+      const paymentResponse = await response.json().catch(() => null);
 
-      if (!response.ok || !apiResponse.success) {
+      if (!response.ok || !paymentResponse?.success) {
         throw new Error(
-          apiResponse.message || "Unable to submit your application"
+          paymentResponse?.message ||
+            "Unable to create the payment. Please try again."
         );
       }
 
-      setSubmitted(true);
-      setData(initialA);
+      if (!paymentResponse.paymentUrl) {
+        throw new Error("The payment gateway URL was not received.");
+      }
+
+      if (paymentResponse.orderId) {
+        sessionStorage.setItem("ilsOrderId", paymentResponse.orderId);
+      }
+
+      window.location.assign(paymentResponse.paymentUrl);
     } catch (error) {
-      console.error("Application submission failed:", error);
+      console.error("Payment initialization failed:", error);
 
       setSubmitError(
         error instanceof Error
           ? error.message
-          : "Unable to submit your application"
+          : "Unable to initiate payment."
       );
-    } finally {
+
       setIsSubmitting(false);
     }
   }
 
-  if (submitted) {
-    return <SuccessCard label="Audience A · Member / Founder" />;
-  }
-
   return (
-    <form onSubmit={onSubmit} className="glass space-y-6 rounded-sm p-8 md:p-10" noValidate>
+    <>
+      <form onSubmit={onSubmit} className="glass space-y-6 rounded-sm p-8 md:p-10" noValidate>
       <p className="text-xs leading-relaxed text-muted-foreground">
         For CC members and founders arriving through referral or press. Tell us briefly what brings
         you in — we read each note.
@@ -237,11 +266,215 @@ function AudienceAForm() {
         </div>
       )}
 
-      <FormFooter
-        note="Your application will be stored securely"
-        isSubmitting={isSubmitting}
+      <FormFooter note="Review pricing before making payment" />
+      </form>
+
+      <PaymentInvoiceModal
+        open={isInvoiceOpen}
+        applicant={validatedData}
+        isRedirecting={isSubmitting}
+        error={submitError}
+        onClose={() => {
+          if (!isSubmitting) {
+            setIsInvoiceOpen(false);
+            setSubmitError("");
+          }
+        }}
+        onMakePayment={makePayment}
       />
-    </form>
+    </>
+  );
+}
+
+function PaymentInvoiceModal({
+  open,
+  applicant,
+  isRedirecting,
+  error,
+  onClose,
+  onMakePayment,
+}: {
+  open: boolean;
+  applicant: AudienceAState | null;
+  isRedirecting: boolean;
+  error: string;
+  onClose: () => void;
+  onMakePayment: () => void;
+}) {
+  useEffect(() => {
+    if (!open) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape" && !isRedirecting) {
+        onClose();
+      }
+    }
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [open, isRedirecting, onClose]);
+
+  if (!open || !applicant) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] overflow-y-auto bg-black/75 p-4 backdrop-blur-sm sm:p-6"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="payment-summary-title"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget && !isRedirecting) {
+          onClose();
+        }
+      }}
+    >
+      <div className="flex min-h-full items-center justify-center py-4 sm:py-6">
+        <div className="relative w-full rounded-2xl border border-gold/25 bg-background shadow-2xl sm:max-w-lg sm:rounded-sm">
+        <div className="border-b border-border/70 bg-background px-5 py-4 md:px-7">
+          <div className="pr-10">
+            <p className="eyebrow">Payment summary</p>
+            <h2 id="payment-summary-title" className="mt-2 font-serif text-3xl">
+              Review your invoice
+            </h2>
+          </div>
+
+          <button
+            type="button"
+            aria-label="Close payment summary"
+            onClick={onClose}
+            disabled={isRedirecting}
+            className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full border border-border text-xl text-muted-foreground transition hover:border-gold hover:text-gold disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="space-y-5 px-5 py-5 md:px-7 md:py-6">
+          <div className="rounded-sm border border-border/80 bg-secondary/20 p-5">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
+                  Billed to
+                </p>
+                <p className="mt-2 font-serif text-xl">{applicant.name}</p>
+                <p className="mt-1 break-all text-sm text-muted-foreground">
+                  {applicant.email}
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {applicant.phone}
+                </p>
+              </div>
+
+              <div className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-gold">
+                ILS 2026
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between border-b border-border/70 pb-3">
+              <span className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
+                Description
+              </span>
+              <span className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
+                Amount
+              </span>
+            </div>
+
+            <div className="flex items-start justify-between gap-6 py-5">
+              <div>
+                <p className="font-medium text-foreground">
+                  ILS 2026 Registration
+                </p>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                  Member attendance application and event registration.
+                </p>
+              </div>
+              <p className="shrink-0 font-medium">
+                {formatINR(REGISTRATION_FEE)}
+              </p>
+            </div>
+
+            <div className="space-y-3 border-t border-border/70 pt-5">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Subtotal</span>
+                <span>{formatINR(REGISTRATION_FEE)}</span>
+              </div>
+
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">
+                  GST ({GST_RATE}%)
+                </span>
+                <span>{formatINR(GST_AMOUNT)}</span>
+              </div>
+
+              <div className="gold-divider my-4" />
+
+              <div className="flex items-end justify-between gap-4">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
+                    Total payable
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Inclusive of all taxes
+                  </p>
+                </div>
+                <p className="font-serif text-3xl text-gold">
+                  {formatINR(TOTAL_AMOUNT)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-sm border border-gold/20 bg-gold/5 px-4 py-3">
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              Clicking Make Payment will securely redirect you to HDFC
+              SmartGateway. The final payable amount is calculated and
+              validated by the backend.
+            </p>
+          </div>
+
+          {error && (
+            <div
+              role="alert"
+              className="rounded-sm border border-destructive/40 bg-destructive/10 px-4 py-3"
+            >
+              <p className="text-sm text-destructive">{error}</p>
+            </div>
+          )}
+
+          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={isRedirecting}
+              className="inline-flex min-h-12 items-center justify-center rounded-sm border border-border px-5 text-xs uppercase tracking-[0.2em] text-muted-foreground transition hover:border-gold/60 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Back
+            </button>
+
+            <button
+              type="button"
+              onClick={onMakePayment}
+              disabled={isRedirecting}
+              className="btn-gold min-h-12 w-full disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+            >
+              {isRedirecting
+                ? "Redirecting securely..."
+                : `Make Payment · ${formatINR(TOTAL_AMOUNT)}`}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
   );
 }
 
