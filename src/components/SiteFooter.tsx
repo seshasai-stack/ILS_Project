@@ -66,7 +66,7 @@ export function SiteFooter() {
           <nav className="flex flex-wrap gap-x-6 gap-y-2 uppercase tracking-[0.18em]" aria-label="Legal">
             <Link to="/terms-and-conditions" className="transition-colors hover:text-gold">Terms &amp; Conditions</Link>
             <Link to="/privacy-policy" className="transition-colors hover:text-gold">Privacy Policy</Link>
-            <Link to="/return-policy" className="transition-colors hover:text-gold">Cancellation &amp; Refund</Link>
+            <Link to="/return-policy" className="transition-colors hover:text-gold">Refund Policy</Link>
           </nav>
           <span className="uppercase tracking-[0.28em]">Confidential &middot; By invitation</span>
         </div>
