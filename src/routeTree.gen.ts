@@ -9,13 +9,21 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsAndConditionsRouteImport } from './routes/terms-and-conditions'
 import { Route as SummitRouteImport } from './routes/summit'
 import { Route as SpeakersRouteImport } from './routes/speakers'
+import { Route as ReturnPolicyRouteImport } from './routes/return-policy'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as PartnersRouteImport } from './routes/partners'
 import { Route as AttendRouteImport } from './routes/attend'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
+const TermsAndConditionsRoute = TermsAndConditionsRouteImport.update({
+  id: '/terms-and-conditions',
+  path: '/terms-and-conditions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SummitRoute = SummitRouteImport.update({
   id: '/summit',
   path: '/summit',
@@ -24,6 +32,16 @@ const SummitRoute = SummitRouteImport.update({
 const SpeakersRoute = SpeakersRouteImport.update({
   id: '/speakers',
   path: '/speakers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReturnPolicyRoute = ReturnPolicyRouteImport.update({
+  id: '/return-policy',
+  path: '/return-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PartnersRoute = PartnersRouteImport.update({
@@ -52,16 +70,22 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/attend': typeof AttendRoute
   '/partners': typeof PartnersRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/return-policy': typeof ReturnPolicyRoute
   '/speakers': typeof SpeakersRoute
   '/summit': typeof SummitRoute
+  '/terms-and-conditions': typeof TermsAndConditionsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/attend': typeof AttendRoute
   '/partners': typeof PartnersRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/return-policy': typeof ReturnPolicyRoute
   '/speakers': typeof SpeakersRoute
   '/summit': typeof SummitRoute
+  '/terms-and-conditions': typeof TermsAndConditionsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -69,22 +93,46 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/attend': typeof AttendRoute
   '/partners': typeof PartnersRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/return-policy': typeof ReturnPolicyRoute
   '/speakers': typeof SpeakersRoute
   '/summit': typeof SummitRoute
+  '/terms-and-conditions': typeof TermsAndConditionsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/attend' | '/partners' | '/speakers' | '/summit'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/attend'
+    | '/partners'
+    | '/privacy-policy'
+    | '/return-policy'
+    | '/speakers'
+    | '/summit'
+    | '/terms-and-conditions'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/attend' | '/partners' | '/speakers' | '/summit'
+  to:
+    | '/'
+    | '/about'
+    | '/attend'
+    | '/partners'
+    | '/privacy-policy'
+    | '/return-policy'
+    | '/speakers'
+    | '/summit'
+    | '/terms-and-conditions'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/attend'
     | '/partners'
+    | '/privacy-policy'
+    | '/return-policy'
     | '/speakers'
     | '/summit'
+    | '/terms-and-conditions'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -92,12 +140,22 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AttendRoute: typeof AttendRoute
   PartnersRoute: typeof PartnersRoute
+  PrivacyPolicyRoute: typeof PrivacyPolicyRoute
+  ReturnPolicyRoute: typeof ReturnPolicyRoute
   SpeakersRoute: typeof SpeakersRoute
   SummitRoute: typeof SummitRoute
+  TermsAndConditionsRoute: typeof TermsAndConditionsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms-and-conditions': {
+      id: '/terms-and-conditions'
+      path: '/terms-and-conditions'
+      fullPath: '/terms-and-conditions'
+      preLoaderRoute: typeof TermsAndConditionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/summit': {
       id: '/summit'
       path: '/summit'
@@ -110,6 +168,20 @@ declare module '@tanstack/react-router' {
       path: '/speakers'
       fullPath: '/speakers'
       preLoaderRoute: typeof SpeakersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/return-policy': {
+      id: '/return-policy'
+      path: '/return-policy'
+      fullPath: '/return-policy'
+      preLoaderRoute: typeof ReturnPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/partners': {
@@ -148,8 +220,11 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AttendRoute: AttendRoute,
   PartnersRoute: PartnersRoute,
+  PrivacyPolicyRoute: PrivacyPolicyRoute,
+  ReturnPolicyRoute: ReturnPolicyRoute,
   SpeakersRoute: SpeakersRoute,
   SummitRoute: SummitRoute,
+  TermsAndConditionsRoute: TermsAndConditionsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
