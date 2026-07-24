@@ -86,7 +86,58 @@ const initialB: AudienceBState = {
   proposal: "",
 };
 
+type PaymentReturnState = {
+  status: "success" | "pending" | "cancelled" | null;
+  orderId: string;
+};
+
 function AttendPage() {
+  const [paymentReturn, setPaymentReturn] =
+    useState<PaymentReturnState>({
+      status: null,
+      orderId: "",
+    });
+
+  useEffect(() => {
+    const params = new URLSearchParams(
+      window.location.search
+    );
+
+    const rawStatus = params
+      .get("payment")
+      ?.trim()
+      .toLowerCase();
+
+    const status =
+      rawStatus === "success" ||
+      rawStatus === "pending" ||
+      rawStatus === "cancelled"
+        ? rawStatus
+        : null;
+
+    setPaymentReturn({
+      status,
+      orderId:
+        params.get("orderId")?.trim() ?? "",
+    });
+  }, []);
+
+  if (
+    paymentReturn.status === "success" ||
+    paymentReturn.status === "pending"
+  ) {
+    return (
+      <section className="py-24 md:py-32">
+        <div className="mx-auto max-w-3xl px-6 lg:px-10">
+          <PaymentStatusCard
+            status={paymentReturn.status}
+            orderId={paymentReturn.orderId}
+          />
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-24 md:py-32">
       <div className="mx-auto max-w-3xl px-6 lg:px-10">
@@ -98,6 +149,21 @@ function AttendPage() {
           Attendance is by application. Choose the pathway that fits you best — we route each
           enquiry to a different desk and reply within five working days.
         </p>
+
+        {paymentReturn.status === "cancelled" && (
+          <div
+            role="alert"
+            className="mt-8 rounded-sm border border-destructive/35 bg-destructive/10 px-5 py-4"
+          >
+            <p className="text-xs uppercase tracking-[0.22em] text-destructive">
+              Payment not completed
+            </p>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              Your payment was cancelled or could not be completed. No confirmed payment has been
+              recorded. You may review your details and try again.
+            </p>
+          </div>
+        )}
 
         <div className="gold-divider my-12" />
 
@@ -134,6 +200,92 @@ function AttendPage() {
         </Tabs>
       </div>
     </section>
+  );
+}
+
+function PaymentStatusCard({
+  status,
+  orderId,
+}: {
+  status: "success" | "pending";
+  orderId: string;
+}) {
+  const isSuccess = status === "success";
+
+  return (
+    <div className="relative overflow-hidden rounded-sm border border-gold/25 bg-background/80 p-8 text-center shadow-2xl backdrop-blur md:p-12">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 top-0 h-40 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold/10 blur-3xl"
+      />
+
+      <div className="relative">
+        <div
+          className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full border text-2xl ${
+            isSuccess
+              ? "border-gold/50 bg-gold/10 text-gold"
+              : "border-gold/35 bg-gold/5 text-gold"
+          }`}
+          aria-hidden="true"
+        >
+          {isSuccess ? "✓" : "…"}
+        </div>
+
+        <p className="eyebrow mt-7">
+          {isSuccess
+            ? "Payment successful"
+            : "Payment under verification"}
+        </p>
+
+        <h1 className="mt-4 font-serif text-4xl leading-tight md:text-5xl">
+          {isSuccess
+            ? "Your registration is confirmed."
+            : "Your payment is currently pending."}
+        </h1>
+
+        <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-muted-foreground">
+          {isSuccess
+            ? "Thank you. Your payment has been successfully verified and your India Leadership Summit 2026 registration has been recorded."
+            : "The payment provider has not yet returned a final confirmation. Please do not make another payment for the same order while verification is in progress."}
+        </p>
+
+        {orderId && (
+          <div className="mx-auto mt-8 max-w-md rounded-sm border border-border/70 bg-secondary/20 px-5 py-4 text-left">
+            <p className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+              Order reference
+            </p>
+            <p className="mt-2 break-all font-medium text-foreground">
+              {orderId}
+            </p>
+          </div>
+        )}
+
+        <div className="mx-auto mt-8 max-w-xl border-t border-border/60 pt-6">
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            {isSuccess
+              ? "A confirmation will be sent to your registered email address."
+              : "Your registration will be confirmed after the bank verifies the transaction."}
+          </p>
+        </div>
+
+        {isSuccess ? (
+          <a
+            href="/"
+            className="btn-gold mt-8 inline-flex"
+          >
+            Return to the summit
+          </a>
+        ) : (
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="btn-gold mt-8"
+          >
+            Check status again
+          </button>
+        )}
+      </div>
+    </div>
   );
 }
 
