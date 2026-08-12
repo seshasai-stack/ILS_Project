@@ -5,6 +5,93 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const API_BASE_URL = "https://ils-backend-1.onrender.com";
 
+type RazorpaySuccessResponse = {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+};
+
+type RazorpayFailureResponse = {
+  error?: {
+    description?: string;
+    reason?: string;
+  };
+};
+
+type RazorpayCheckoutOptions = {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  prefill: {
+    name: string;
+    email: string;
+    contact: string;
+  };
+  handler: (response: RazorpaySuccessResponse) => void | Promise<void>;
+  modal: {
+    ondismiss: () => void | Promise<void>;
+  };
+  retry: {
+    enabled: boolean;
+  };
+  theme: {
+    color: string;
+  };
+};
+
+type RazorpayCheckout = {
+  open: () => void;
+  on: (
+    event: "payment.failed",
+    handler: (response: RazorpayFailureResponse) => void
+  ) => void;
+};
+
+declare global {
+  interface Window {
+    Razorpay?: new (options: RazorpayCheckoutOptions) => RazorpayCheckout;
+  }
+}
+
+let razorpayScriptPromise: Promise<void> | null = null;
+
+function loadRazorpayCheckout(): Promise<void> {
+  if (window.Razorpay) return Promise.resolve();
+  if (razorpayScriptPromise) return razorpayScriptPromise;
+
+  razorpayScriptPromise = new Promise((resolve, reject) => {
+    const existingScript = document.querySelector<HTMLScriptElement>(
+      'script[src="https://checkout.razorpay.com/v1/checkout.js"]'
+    );
+
+    const script = existingScript ?? document.createElement("script");
+
+    const handleLoad = () => {
+      if (window.Razorpay) resolve();
+      else reject(new Error("Razorpay Checkout could not be initialized."));
+    };
+
+    const handleError = () => {
+      razorpayScriptPromise = null;
+      reject(new Error("Unable to load the secure payment window."));
+    };
+
+    script.addEventListener("load", handleLoad, { once: true });
+    script.addEventListener("error", handleError, { once: true });
+
+    if (!existingScript) {
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.async = true;
+      document.head.appendChild(script);
+    }
+  });
+
+  return razorpayScriptPromise;
+}
+
 const REGISTRATION_FEE = 39_500;
 const GST_RATE = 18;
 const GST_AMOUNT = (REGISTRATION_FEE * GST_RATE) / 100;
@@ -335,6 +422,8 @@ function AudienceAForm() {
       setIsSubmitting(true);
       setSubmitError("");
 
+      await loadRazorpayCheckout();
+
       const response = await fetch(
         `${API_BASE_URL}/api/payment/create-payment`,
         {
@@ -355,15 +444,142 @@ function AudienceAForm() {
         );
       }
 
-      if (!paymentResponse.paymentUrl) {
-        throw new Error("The payment gateway URL was not received.");
+      const localOrderId = String(paymentResponse.orderId ?? "").trim();
+      const gatewayOrderId = String(paymentResponse.razorpay?.orderId ?? "").trim();
+      const keyId = String(paymentResponse.razorpay?.keyId ?? "").trim();
+      const amount = Number(paymentResponse.razorpay?.amount);
+      const currency = String(paymentResponse.razorpay?.currency ?? "INR").trim();
+
+      if (
+        !localOrderId ||
+        !gatewayOrderId ||
+        !keyId ||
+        !Number.isInteger(amount) ||
+        amount < 100
+      ) {
+        throw new Error("The payment gateway returned an invalid order.");
       }
 
-      if (paymentResponse.orderId) {
-        sessionStorage.setItem("ilsOrderId", paymentResponse.orderId);
+      sessionStorage.setItem("ilsOrderId", localOrderId);
+
+      const Razorpay = window.Razorpay;
+      if (!Razorpay) {
+        throw new Error("Razorpay Checkout is unavailable.");
       }
 
-      window.location.assign(paymentResponse.paymentUrl);
+      let checkoutFinished = false;
+
+      const checkout = new Razorpay({
+        key: keyId,
+        amount,
+        currency,
+        name: "India Leadership Summit 2026",
+        description: "ILS 2026 Registration",
+        order_id: gatewayOrderId,
+        prefill: {
+          name: validatedData.name,
+          email: validatedData.email,
+          contact: validatedData.phone,
+        },
+        retry: {
+          enabled: true,
+        },
+        theme: {
+          color: "#c4a15a",
+        },
+        handler: async (razorpayResponse) => {
+          checkoutFinished = true;
+
+          try {
+            const verifyResponse = await fetch(
+              `${API_BASE_URL}/api/payment/verify`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  orderId: localOrderId,
+                  ...razorpayResponse,
+                }),
+              }
+            );
+
+            const verification = await verifyResponse.json().catch(() => null);
+
+            if (verifyResponse.status === 202) {
+              window.location.assign(
+                `/attend?payment=pending&orderId=${encodeURIComponent(localOrderId)}`
+              );
+              return;
+            }
+
+            if (!verifyResponse.ok || verification?.paymentStatus !== "SUCCESS") {
+              throw new Error(
+                verification?.message ||
+                  "Payment verification is pending. Please check the status again."
+              );
+            }
+
+            window.location.assign(
+              `/attend?payment=success&orderId=${encodeURIComponent(localOrderId)}`
+            );
+          } catch (error) {
+            console.error("Payment verification failed:", error);
+            setSubmitError(
+              error instanceof Error
+                ? error.message
+                : "Unable to verify the payment."
+            );
+            setIsSubmitting(false);
+          }
+        },
+        modal: {
+          ondismiss: async () => {
+            if (checkoutFinished) return;
+
+            try {
+              const cancelResponse = await fetch(
+                `${API_BASE_URL}/api/payment/cancel`,
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    orderId: localOrderId,
+                    reason: "Checkout dismissed",
+                  }),
+                }
+              );
+
+              const cancellation = await cancelResponse.json().catch(() => null);
+              if (cancellation?.paymentStatus === "SUCCESS") {
+                window.location.assign(
+                  `/attend?payment=success&orderId=${encodeURIComponent(localOrderId)}`
+                );
+                return;
+              }
+            } catch (error) {
+              console.error("Unable to record checkout dismissal:", error);
+            }
+
+            setSubmitError("Payment was cancelled. You can try again.");
+            setIsSubmitting(false);
+          },
+        },
+      });
+
+      checkout.on("payment.failed", (failure) => {
+        setSubmitError(
+          failure.error?.description ||
+            failure.error?.reason ||
+            "Payment failed. Please try again."
+        );
+        setIsSubmitting(false);
+      });
+
+      checkout.open();
     } catch (error) {
       console.error("Payment initialization failed:", error);
 
