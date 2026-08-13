@@ -803,7 +803,7 @@ function PaymentInvoiceModal({
 
           <div className="rounded-sm border border-gold/20 bg-gold/5 px-4 py-3">
             <p className="text-xs leading-relaxed text-muted-foreground">
-              Clicking Make Payment will securely redirect you to HDFC
+              Clicking Make Payment will securely redirect you to Razorpay
               SmartGateway. The final payable amount is calculated and
               validated by the backend.
             </p>
