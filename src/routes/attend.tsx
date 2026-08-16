@@ -119,28 +119,270 @@ export const Route = createFileRoute("/attend")({
 });
 
 // ------- Audience A: Members / Founders (referral or press) -------
-const audienceASchema = z.object({
-  name: z.string().trim().min(2, "Please enter your full name").max(100),
-  email: z.string().trim().email("Please enter a valid email").max(255),
-  phone: z.string().trim().min(6, "Please enter a valid phone").max(30),
-  organization: z.string().trim().min(2, "Please enter your company").max(150),
-  designation: z.string().trim().min(2, "Please enter your role").max(100),
-  // referredBy: z.string().trim().max(150).optional().or(z.literal("")),
-  intent: z
-    .string()
-    .trim()
-    .min(10, "A sentence or two helps us route this thoughtfully")
-    .max(800)
-    .optional()
-    .or(z.literal(""))
-});
+const registrationTypeOptions = [
+  "Member",
+  "Chapter Director",
+  "National Director",
+  "Executive Director",
+  "Admin",
+  "Guest/Visitor"
+];
+
+const industryOptions = [
+  "Automotive",
+  "Business Services",
+  "Construction & Architecture",
+  "Energy / Renewable Energy",
+  "Financial Services",
+  "Food & Beverage",
+  "Hardware & Telecom",
+  "Higher Education",
+  "Hospitality",
+  "IT & Software",
+  "Legal Services",
+  "Lifestyle Business",
+  "Manufacturing",
+  "Marketing",
+  "Medical / Health / Wellness",
+  "Real Estate & Infrastructure",
+  "Retail",
+  "Textile & Apparels",
+  "Training & Development",
+  "Transportation & Logistics",
+  "Other",
+];
+
+const sponsorshipOptions = [
+  "Yes",
+  "No",
+  "Need more information",
+];
+
+const dietaryOptions = [
+  "No Restrictions",
+  "Dairy Free",
+  "Gluten Free",
+  "Vegetarian",
+  "Vegan",
+  "Jain Meals",
+  "Other",
+];
+
+const countryOptions = [
+  "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda",
+  "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain",
+  "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan",
+  "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria",
+  "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia", "Cameroon", "Canada",
+  "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros",
+  "Congo, Democratic Republic of the", "Congo, Republic of the", "Costa Rica",
+  "Côte d’Ivoire", "Croatia", "Cuba", "Cyprus", "Czechia", "Denmark", "Djibouti",
+  "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador",
+  "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Fiji",
+  "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece",
+  "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti",
+  "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq",
+  "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan",
+  "Kenya", "Kiribati", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon",
+  "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg",
+  "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta",
+  "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia",
+  "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique",
+  "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand",
+  "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway",
+  "Oman", "Pakistan", "Palau", "Palestine", "Panama", "Papua New Guinea",
+  "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania",
+  "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia",
+  "Saint Vincent and the Grenadines", "Samoa", "San Marino",
+  "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles",
+  "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands",
+  "Somalia", "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka",
+  "Sudan", "Suriname", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan",
+  "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago",
+  "Tunisia", "Türkiye", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine",
+  "United Arab Emirates", "United Kingdom", "United States", "Uruguay",
+  "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen",
+  "Zambia", "Zimbabwe",
+];
+
+const audienceASchema = z
+  .object({
+    registrationType: z
+      .string()
+      .trim()
+      .min(1, "Please select your registration type"),
+
+    name: z
+      .string()
+      .trim()
+      .min(2, "Please enter your full name")
+      .max(100),
+
+    email: z
+      .string()
+      .trim()
+      .email("Please enter a valid email")
+      .max(255),
+
+    phone: z
+      .string()
+      .trim()
+      .min(6, "Please enter a valid phone")
+      .max(30),
+
+    chapterName: z
+      .string()
+      .trim()
+      .min(2, "Please enter your chapter name, market or region")
+      .max(150),
+
+    organization: z
+      .string()
+      .trim()
+      .min(2, "Please enter your company")
+      .max(150),
+
+    designation: z
+      .string()
+      .trim()
+      .min(2, "Please enter your role")
+      .max(100),
+
+    industry: z
+      .string()
+      .trim()
+      .min(1, "Please select your industry"),
+
+    industryOther: z
+      .string()
+      .trim()
+      .max(150)
+      .optional()
+      .or(z.literal("")),
+
+    sponsorshipInterest: z
+      .string()
+      .trim()
+      .max(100)
+      .optional()
+      .or(z.literal("")),
+
+    sponsorshipDetails: z
+      .string()
+      .trim()
+      .max(500)
+      .optional()
+      .or(z.literal("")),
+
+    dietaryRestrictions: z
+      .array(z.string())
+      .min(1, "Please select at least one dietary option"),
+
+    dietaryOther: z
+      .string()
+      .trim()
+      .max(150)
+      .optional()
+      .or(z.literal("")),
+
+    address1: z
+      .string()
+      .trim()
+      .min(2, "Please enter Address 1")
+      .max(250),
+
+    address2: z
+      .string()
+      .trim()
+      .max(250)
+      .optional()
+      .or(z.literal("")),
+
+    country: z
+      .string()
+      .trim()
+      .min(1, "Please select your country/region"),
+
+    city: z
+      .string()
+      .trim()
+      .min(2, "Please enter your city")
+      .max(100),
+
+    stateProvince: z
+      .string()
+      .trim()
+      .max(100)
+      .optional()
+      .or(z.literal("")),
+
+    postalCode: z
+      .string()
+      .trim()
+      .min(2, "Please enter your ZIP/Postal code")
+      .max(30),
+
+    vatGstNumber: z
+      .string()
+      .trim()
+      .max(100)
+      .optional()
+      .or(z.literal("")),
+
+    // referredBy: z.string().trim().max(150).optional().or(z.literal("")),
+
+    intent: z
+      .string()
+      .trim()
+      .min(1, "A sentence or two helps us route this thoughtfully")
+      .max(800)
+      .optional()
+      .or(z.literal("")),
+  })
+  .superRefine((data, ctx) => {
+    if (data.industry === "Other" && !data.industryOther?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["industryOther"],
+        message: "Please specify your industry",
+      });
+    }
+
+    if (
+      data.dietaryRestrictions.includes("Other") &&
+      !data.dietaryOther?.trim()
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["dietaryOther"],
+        message: "Please specify your dietary restriction",
+      });
+    }
+  });
+
 type AudienceAState = z.infer<typeof audienceASchema>;
+
 const initialA: AudienceAState = {
+  registrationType: "",
   name: "",
   email: "",
   phone: "",
+  chapterName: "",
   organization: "",
   designation: "",
+  industry: "",
+  industryOther: "",
+  sponsorshipInterest: "",
+  sponsorshipDetails: "",
+  dietaryRestrictions: [],
+  dietaryOther: "",
+  address1: "",
+  address2: "",
+  country: "",
+  city: "",
+  stateProvince: "",
+  postalCode: "",
+  vatGstNumber: "",
   intent: "",
 };
 
@@ -214,8 +456,8 @@ function AttendPage() {
     paymentReturn.status === "pending"
   ) {
     return (
-      <section className="py-24 md:py-32">
-        <div className="mx-auto max-w-3xl px-6 lg:px-10">
+      <section className="py-16 sm:py-20 md:py-32">
+        <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:px-10">
           <PaymentStatusCard
             status={paymentReturn.status}
             orderId={paymentReturn.orderId}
@@ -226,10 +468,10 @@ function AttendPage() {
   }
 
   return (
-    <section className="py-24 md:py-32">
-      <div className="mx-auto max-w-3xl px-6 lg:px-10">
+    <section className="py-16 sm:py-20 md:py-32">
+      <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:px-10">
         <p className="eyebrow">Register · ILS 2026</p>
-        <h1 className="mt-6 font-serif text-5xl leading-tight md:text-6xl">
+        <h1 className="mt-6 font-serif text-4xl leading-tight sm:text-5xl md:text-6xl">
           Two pathways. One <span className="gold-gradient-text italic">considered</span> room.
         </h1>
         <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground">
@@ -379,14 +621,47 @@ function PaymentStatusCard({
 // -------------------- Audience A form --------------------
 function AudienceAForm() {
   const [data, setData] = useState<AudienceAState>(initialA);
-  const [errors, setErrors] = useState<Partial<Record<keyof AudienceAState, string>>>({});
-  const [validatedData, setValidatedData] = useState<AudienceAState | null>(null);
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof AudienceAState, string>>
+  >({});
+  const [validatedData, setValidatedData] = useState<AudienceAState | null>(
+    null
+  );
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
-  function update<K extends keyof AudienceAState>(k: K, v: string) {
+  function update<K extends keyof AudienceAState>(
+    k: K,
+    v: AudienceAState[K]
+  ) {
     setData((d) => ({ ...d, [k]: v }));
+  }
+
+  function toggleDietary(option: string) {
+    setData((current) => {
+      const selected = current.dietaryRestrictions;
+
+      if (option === "No Restrictions") {
+        return {
+          ...current,
+          dietaryRestrictions: selected.includes("No Restrictions")
+            ? []
+            : ["No Restrictions"],
+        };
+      }
+
+      const withoutNoRestrictions = selected.filter(
+        (item) => item !== "No Restrictions"
+      );
+
+      return {
+        ...current,
+        dietaryRestrictions: withoutNoRestrictions.includes(option)
+          ? withoutNoRestrictions.filter((item) => item !== option)
+          : [...withoutNoRestrictions, option],
+      };
+    });
   }
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -445,10 +720,14 @@ function AudienceAForm() {
       }
 
       const localOrderId = String(paymentResponse.orderId ?? "").trim();
-      const gatewayOrderId = String(paymentResponse.razorpay?.orderId ?? "").trim();
+      const gatewayOrderId = String(
+        paymentResponse.razorpay?.orderId ?? ""
+      ).trim();
       const keyId = String(paymentResponse.razorpay?.keyId ?? "").trim();
       const amount = Number(paymentResponse.razorpay?.amount);
-      const currency = String(paymentResponse.razorpay?.currency ?? "INR").trim();
+      const currency = String(
+        paymentResponse.razorpay?.currency ?? "INR"
+      ).trim();
 
       if (
         !localOrderId ||
@@ -509,12 +788,17 @@ function AudienceAForm() {
 
             if (verifyResponse.status === 202) {
               window.location.assign(
-                `/attend?payment=pending&orderId=${encodeURIComponent(localOrderId)}`
+                `/attend?payment=pending&orderId=${encodeURIComponent(
+                  localOrderId
+                )}`
               );
               return;
             }
 
-            if (!verifyResponse.ok || verification?.paymentStatus !== "SUCCESS") {
+            if (
+              !verifyResponse.ok ||
+              verification?.paymentStatus !== "SUCCESS"
+            ) {
               throw new Error(
                 verification?.message ||
                   "Payment verification is pending. Please check the status again."
@@ -522,7 +806,9 @@ function AudienceAForm() {
             }
 
             window.location.assign(
-              `/attend?payment=success&orderId=${encodeURIComponent(localOrderId)}`
+              `/attend?payment=success&orderId=${encodeURIComponent(
+                localOrderId
+              )}`
             );
           } catch (error) {
             console.error("Payment verification failed:", error);
@@ -554,9 +840,12 @@ function AudienceAForm() {
               );
 
               const cancellation = await cancelResponse.json().catch(() => null);
+
               if (cancellation?.paymentStatus === "SUCCESS") {
                 window.location.assign(
-                  `/attend?payment=success&orderId=${encodeURIComponent(localOrderId)}`
+                  `/attend?payment=success&orderId=${encodeURIComponent(
+                    localOrderId
+                  )}`
                 );
                 return;
               }
@@ -595,46 +884,317 @@ function AudienceAForm() {
 
   return (
     <>
-      <form onSubmit={onSubmit} className="glass space-y-6 rounded-sm p-8 md:p-10" noValidate>
-      <p className="text-xs leading-relaxed text-muted-foreground">
-        For CC members and founders arriving through referral or press. Tell us briefly what brings
-        you in — we read each note.
-      </p>
-      <Field label="Full Name" id="a-name" value={data.name} onChange={(v) => update("name", v)} error={errors.name} />
-      <div className="grid gap-6 md:grid-cols-2">
-        <Field label="Email" id="a-email" type="email" value={data.email} onChange={(v) => update("email", v)} error={errors.email} />
-        <Field label="Phone Number" id="a-phone" type="tel" value={data.phone} onChange={(v) => update("phone", v)} error={errors.phone} />
-      </div>
-      <div className="grid gap-6 md:grid-cols-2">
-        <Field label="Company" id="a-org" value={data.organization} onChange={(v) => update("organization", v)} error={errors.organization} />
-        <Field label="Designation" id="a-role" value={data.designation} onChange={(v) => update("designation", v)} error={errors.designation} />
-      </div>
-      {/* <Field
-        label="Referred By (optional)"
-        id="a-ref"
-        value={data.referredBy ?? ""}
-        onChange={(v) => update("referredBy", v)}
-        error={errors.referredBy}
-      /> */}
-      <TextareaField
-        label="What brings you to ILS? (optional)"
-        id="a-intent"
-        value={data.intent}
-        onChange={(v) => update("intent", v)}
-        error={errors.intent}
-        placeholder="A sentence or two. Helps us route thoughtfully."
-      />
+      <form
+        onSubmit={onSubmit}
+        className="glass space-y-7 rounded-sm p-5 sm:p-8 md:p-10"
+        noValidate
+      >
+        <p className="text-xs leading-relaxed text-muted-foreground">
+          For CC members and founders arriving through referral or press. Tell
+          us briefly what brings you in — we read each note.
+        </p>
 
-      {submitError && (
-        <div
-          role="alert"
-          className="rounded-sm border border-destructive/40 bg-destructive/10 px-4 py-3"
-        >
-          <p className="text-sm text-destructive">{submitError}</p>
+        {/* 1. Registration Type */}
+        <SelectField
+          label="Registration Type"
+          id="a-registration-type"
+          value={data.registrationType}
+          onChange={(v) => update("registrationType", v)}
+          options={registrationTypeOptions}
+          error={errors.registrationType}
+          placeholder="Select registration type"
+          required
+        />
+
+        {/* 2. Name */}
+        <Field
+          label="Full Name (as it should appear on your name badge)"
+          id="a-name"
+          value={data.name}
+          onChange={(v) => update("name", v)}
+          error={errors.name}
+          required
+        />
+
+        {/* 3. Email */}
+        <Field
+          label="Email (email will be used for all India Leadership Summit communication)"
+          id="a-email"
+          type="email"
+          value={data.email}
+          onChange={(v) => update("email", v)}
+          error={errors.email}
+          required
+        />
+
+        {/* 4. Mobile */}
+        <Field
+          label="Phone Number"
+          id="a-phone"
+          type="tel"
+          value={data.phone}
+          onChange={(v) => update("phone", v)}
+          error={errors.phone}
+          required
+        />
+
+        {/* 5. Chapter Name */}
+        <Field
+          label="Chapter Name (National and Executive Directors, please enter your market or region)"
+          id="a-chapter-name"
+          value={data.chapterName}
+          onChange={(v) => update("chapterName", v)}
+          error={errors.chapterName}
+          required
+        />
+
+        {/* 6. Company */}
+        <Field
+          label="Company"
+          id="a-org"
+          value={data.organization}
+          onChange={(v) => update("organization", v)}
+          error={errors.organization}
+          required
+        />
+
+        {/* 7. Designation */}
+        <Field
+          label="Designation (CEO, COO, CFO, as it should appear on your name badge)"
+          id="a-role"
+          value={data.designation}
+          onChange={(v) => update("designation", v)}
+          error={errors.designation}
+          required
+        />
+
+        {/* 8. Industry */}
+        <div>
+          <p className="eyebrow max-w-full break-words leading-5 sm:leading-6">
+            <RequiredMark />
+            Please select your industry
+          </p>
+
+          <div className="mt-4 space-y-2 sm:space-y-3">
+            {industryOptions.map((option) => (
+              <label
+                key={option}
+                className="flex min-h-[44px] cursor-pointer items-start gap-3 py-2 text-sm leading-6 text-foreground/85 sm:min-h-0 sm:py-1"
+              >
+                <input
+                  type="radio"
+                  name="a-industry"
+                  value={option}
+                  checked={data.industry === option}
+                  onChange={() => update("industry", option)}
+                  className="mt-0.5 h-5 w-5 shrink-0 accent-gold sm:h-4 sm:w-4"
+                />
+                <span>{option}</span>
+              </label>
+            ))}
+          </div>
+
+          <input
+            type="text"
+            value={data.industryOther ?? ""}
+            onChange={(e) => update("industryOther", e.target.value)}
+            aria-label="Other industry"
+            placeholder="If Other, please specify"
+            className="mt-3 min-h-12 w-full max-w-full rounded-sm border border-border bg-transparent px-4 py-3 text-base text-foreground placeholder:text-muted-foreground/60 focus:border-gold focus:outline-none sm:text-sm"
+          />
+
+          {errors.industry && (
+            <p className="mt-2 text-xs text-destructive">{errors.industry}</p>
+          )}
+
+          {errors.industryOther && (
+            <p className="mt-2 text-xs text-destructive">
+              {errors.industryOther}
+            </p>
+          )}
         </div>
-      )}
 
-      <FormFooter note="Review pricing before making payment" />
+        {/* 9. Sponsorship */}
+        <div>
+          <p className="eyebrow max-w-full break-words leading-5 sm:leading-6">
+            Are you interested in sponsorship opportunities for the 2026 Global
+            Leadership Summit?
+          </p>
+
+          <div className="mt-4 space-y-2 sm:space-y-3">
+            {sponsorshipOptions.map((option) => (
+              <label
+                key={option}
+                className="flex min-h-[44px] cursor-pointer items-start gap-3 py-2 text-sm leading-6 text-foreground/85 sm:min-h-0 sm:py-1"
+              >
+                <input
+                  type="radio"
+                  name="a-sponsorship"
+                  value={option}
+                  checked={data.sponsorshipInterest === option}
+                  onChange={() => update("sponsorshipInterest", option)}
+                  className="mt-0.5 h-5 w-5 shrink-0 accent-gold sm:h-4 sm:w-4"
+                />
+                <span>{option}</span>
+              </label>
+            ))}
+          </div>
+
+          <input
+            type="text"
+            value={data.sponsorshipDetails ?? ""}
+            onChange={(e) => update("sponsorshipDetails", e.target.value)}
+            aria-label="Sponsorship information details"
+            placeholder="Additional information (optional)"
+            className="mt-3 min-h-12 w-full max-w-full rounded-sm border border-border bg-transparent px-4 py-3 text-base text-foreground placeholder:text-muted-foreground/60 focus:border-gold focus:outline-none sm:text-sm"
+          />
+        </div>
+
+        {/* 9. Dietary Restrictions */}
+        <div>
+          <p className="eyebrow max-w-full break-words leading-5 sm:leading-6">
+            <RequiredMark />
+            Do you have any dietary restrictions?
+          </p>
+
+          <div className="mt-4 space-y-2 sm:space-y-3">
+            {dietaryOptions.map((option) => (
+              <label
+                key={option}
+                className="flex min-h-[44px] cursor-pointer items-start gap-3 py-2 text-sm leading-6 text-foreground/85 sm:min-h-0 sm:py-1"
+              >
+                <input
+                  type="checkbox"
+                  value={option}
+                  checked={data.dietaryRestrictions.includes(option)}
+                  onChange={() => toggleDietary(option)}
+                  className="mt-0.5 h-5 w-5 shrink-0 accent-gold sm:h-4 sm:w-4"
+                />
+                <span>{option}</span>
+              </label>
+            ))}
+          </div>
+
+          <input
+            type="text"
+            value={data.dietaryOther ?? ""}
+            onChange={(e) => update("dietaryOther", e.target.value)}
+            aria-label="Other dietary restriction"
+            placeholder="If Other, please specify"
+            className="mt-3 min-h-12 w-full max-w-full rounded-sm border border-border bg-transparent px-4 py-3 text-base text-foreground placeholder:text-muted-foreground/60 focus:border-gold focus:outline-none sm:text-sm"
+          />
+
+          {errors.dietaryRestrictions && (
+            <p className="mt-2 text-xs text-destructive">
+              {errors.dietaryRestrictions}
+            </p>
+          )}
+
+          {errors.dietaryOther && (
+            <p className="mt-2 text-xs text-destructive">
+              {errors.dietaryOther}
+            </p>
+          )}
+        </div>
+
+        {/* 10. Invoice Address */}
+        <div className="space-y-6">
+          <div>
+            <p className="eyebrow">
+              <RequiredMark />
+              Address for invoice purposes. If you require invoice please fill
+              in the below details
+            </p>
+          </div>
+
+          <Field
+            label="Address 1"
+            id="a-address-1"
+            value={data.address1}
+            onChange={(v) => update("address1", v)}
+            error={errors.address1}
+            required
+          />
+
+          <Field
+            label="Address 2"
+            id="a-address-2"
+            value={data.address2 ?? ""}
+            onChange={(v) => update("address2", v)}
+            error={errors.address2}
+          />
+
+          <div className="grid gap-6 md:grid-cols-2">
+            <SelectField
+              label="Country/Region"
+              id="a-country"
+              value={data.country}
+              onChange={(v) => update("country", v)}
+              options={countryOptions}
+              error={errors.country}
+              placeholder="Select country/region"
+              required
+            />
+
+            <Field
+              label="City"
+              id="a-city"
+              value={data.city}
+              onChange={(v) => update("city", v)}
+              error={errors.city}
+              required
+            />
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2">
+            <Field
+              label="State/Province"
+              id="a-state"
+              value={data.stateProvince ?? ""}
+              onChange={(v) => update("stateProvince", v)}
+              error={errors.stateProvince}
+            />
+
+            <Field
+              label="ZIP/Postal code"
+              id="a-postal-code"
+              value={data.postalCode}
+              onChange={(v) => update("postalCode", v)}
+              error={errors.postalCode}
+              required
+            />
+          </div>
+        </div>
+
+        {/* 10. VAT/GST */}
+        <Field
+          label="VAT/GST Number"
+          id="a-vat-gst"
+          value={data.vatGstNumber ?? ""}
+          onChange={(v) => update("vatGstNumber", v)}
+          error={errors.vatGstNumber}
+        />
+
+        {/* Existing field — unchanged */}
+        <TextareaField
+          label="What brings you to ILS? (optional)"
+          id="a-intent"
+          value={data.intent ?? ""}
+          onChange={(v) => update("intent", v)}
+          error={errors.intent}
+          placeholder="A sentence or two. Helps us route thoughtfully."
+        />
+
+        {submitError && (
+          <div
+            role="alert"
+            className="rounded-sm border border-destructive/40 bg-destructive/10 px-4 py-3"
+          >
+            <p className="text-sm text-destructive">{submitError}</p>
+          </div>
+        )}
+
+        <FormFooter note="Review pricing before making payment" />
       </form>
 
       <PaymentInvoiceModal
@@ -693,7 +1253,7 @@ function PaymentInvoiceModal({
 
   return (
     <div
-      className="fixed inset-0 z-[100] overflow-y-auto bg-black/75 p-4 backdrop-blur-sm sm:p-6"
+      className="fixed inset-0 z-[100] overflow-y-auto bg-black/75 p-3 backdrop-blur-sm sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-labelledby="payment-summary-title"
@@ -704,11 +1264,11 @@ function PaymentInvoiceModal({
       }}
     >
       <div className="flex min-h-full items-center justify-center py-4 sm:py-6">
-        <div className="relative w-full rounded-2xl border border-gold/25 bg-background shadow-2xl sm:max-w-lg sm:rounded-sm">
-        <div className="border-b border-border/70 bg-background px-5 py-4 md:px-7">
+        <div className="relative w-full max-w-[calc(100vw-1.5rem)] rounded-2xl border border-gold/25 bg-background shadow-2xl sm:max-w-lg sm:rounded-sm">
+        <div className="border-b border-border/70 bg-background px-4 py-4 sm:px-5 md:px-7">
           <div className="pr-10">
             <p className="eyebrow">Payment summary</p>
-            <h2 id="payment-summary-title" className="mt-2 font-serif text-3xl">
+            <h2 id="payment-summary-title" className="mt-2 font-serif text-2xl sm:text-3xl">
               Review your invoice
             </h2>
           </div>
@@ -718,15 +1278,15 @@ function PaymentInvoiceModal({
             aria-label="Close payment summary"
             onClick={onClose}
             disabled={isRedirecting}
-            className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full border border-border text-xl text-muted-foreground transition hover:border-gold hover:text-gold disabled:cursor-not-allowed disabled:opacity-50"
+            className="absolute right-3 top-3 flex h-10 w-10 sm:right-5 sm:top-5 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-border text-xl text-muted-foreground transition hover:border-gold hover:text-gold disabled:cursor-not-allowed disabled:opacity-50"
           >
             ×
           </button>
         </div>
 
-        <div className="space-y-5 px-5 py-5 md:px-7 md:py-6">
-          <div className="rounded-sm border border-border/80 bg-secondary/20 p-5">
-            <div className="flex items-start justify-between gap-4">
+        <div className="space-y-5 px-4 py-5 sm:px-5 md:px-7 md:py-6">
+          <div className="rounded-sm border border-border/80 bg-secondary/20 p-4 sm:p-5">
+            <div className="flex flex-col items-start gap-4 sm:flex-row sm:justify-between">
               <div>
                 <p className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
                   Billed to
@@ -756,7 +1316,7 @@ function PaymentInvoiceModal({
               </span>
             </div>
 
-            <div className="flex items-start justify-between gap-6 py-5">
+            <div className="flex flex-col items-start gap-3 py-5 sm:flex-row sm:justify-between sm:gap-6">
               <div>
                 <p className="font-medium text-foreground">
                   ILS 2026 Registration
@@ -785,7 +1345,7 @@ function PaymentInvoiceModal({
 
               <div className="gold-divider my-4" />
 
-              <div className="flex items-end justify-between gap-4">
+              <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
                 <div>
                   <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
                     Total payable
@@ -794,7 +1354,7 @@ function PaymentInvoiceModal({
                     Inclusive of all taxes
                   </p>
                 </div>
-                <p className="font-serif text-3xl text-gold">
+                <p className="font-serif text-2xl text-gold sm:text-3xl">
                   {formatINR(TOTAL_AMOUNT)}
                 </p>
               </div>
@@ -885,7 +1445,7 @@ function AudienceBForm() {
   ];
 
   return (
-    <form onSubmit={onSubmit} className="glass space-y-6 rounded-sm p-8 md:p-10" noValidate>
+    <form onSubmit={onSubmit} className="glass space-y-7 rounded-sm p-5 sm:p-8 md:p-10" noValidate>
       <p className="text-xs leading-relaxed text-muted-foreground">
         For prospective partners, sponsors, and speakers assessing fit and credibility. Share a
         short proposal — we'll respond with the room's parameters.
@@ -893,7 +1453,7 @@ function AudienceBForm() {
 
       <div>
         <span className="eyebrow">Engagement</span>
-        <div className="mt-3 grid grid-cols-3 gap-2">
+        <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
           {engagementOptions.map((opt) => (
             <button
               type="button"
@@ -947,6 +1507,14 @@ function AudienceBForm() {
 }
 
 // -------------------- Shared subcomponents --------------------
+function RequiredMark() {
+  return (
+    <span className="mr-1 text-destructive" aria-hidden="true">
+      *
+    </span>
+  );
+}
+
 function Field({
   label,
   id,
@@ -954,6 +1522,7 @@ function Field({
   onChange,
   type = "text",
   error,
+  required = false,
 }: {
   label: string;
   id: string;
@@ -961,10 +1530,12 @@ function Field({
   onChange: (v: string) => void;
   type?: string;
   error?: string;
+  required?: boolean;
 }) {
   return (
     <div>
-      <label htmlFor={id} className="eyebrow">
+      <label htmlFor={id} className="eyebrow block max-w-full break-words leading-5 sm:leading-6">
+        {required && <RequiredMark />}
         {label}
       </label>
       <input
@@ -972,8 +1543,56 @@ function Field({
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-3 w-full rounded-sm border border-border bg-transparent px-4 py-3 text-sm text-foreground focus:border-gold focus:outline-none"
+        aria-required={required}
+        className="mt-3 min-h-12 w-full max-w-full rounded-sm border border-border bg-transparent px-4 py-3 text-base text-foreground focus:border-gold focus:outline-none sm:text-sm"
       />
+      {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
+    </div>
+  );
+}
+
+function SelectField({
+  label,
+  id,
+  value,
+  onChange,
+  options,
+  error,
+  placeholder,
+  required = false,
+}: {
+  label: string;
+  id: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: readonly string[];
+  error?: string;
+  placeholder?: string;
+  required?: boolean;
+}) {
+  return (
+    <div>
+      <label htmlFor={id} className="eyebrow block max-w-full break-words leading-5 sm:leading-6">
+        {required && <RequiredMark />}
+        {label}
+      </label>
+
+      <select
+        id={id}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        aria-required={required}
+        className="mt-3 min-h-12 w-full max-w-full rounded-sm border border-border bg-background px-4 py-3 text-base text-foreground focus:border-gold focus:outline-none sm:text-sm"
+      >
+        <option value="">{placeholder ?? "Select an option"}</option>
+
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
+
       {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
     </div>
   );
@@ -998,7 +1617,7 @@ function TextareaField({
 }) {
   return (
     <div>
-      <label htmlFor={id} className="eyebrow">
+      <label htmlFor={id} className="eyebrow block max-w-full break-words leading-5 sm:leading-6">
         {label}
       </label>
       <textarea
@@ -1007,7 +1626,7 @@ function TextareaField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="mt-3 w-full resize-none rounded-sm border border-border bg-transparent px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-gold focus:outline-none"
+        className="mt-3 w-full max-w-full resize-none rounded-sm border border-border bg-transparent px-4 py-3 text-base text-foreground placeholder:text-muted-foreground/60 focus:border-gold focus:outline-none sm:text-sm"
       />
       {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
     </div>
@@ -1023,10 +1642,10 @@ function FormFooter({
 }) {
   return (
     <div className="flex flex-col items-start gap-4 pt-2 sm:flex-row sm:items-center sm:justify-between">
-      <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">{note}</p>
+      <p className="max-w-full break-words text-[10px] uppercase leading-5 tracking-[0.18em] text-muted-foreground sm:text-xs sm:tracking-[0.22em]">{note}</p>
       <button
         type="submit"
-        className="btn-gold disabled:cursor-not-allowed disabled:opacity-60"
+        className="btn-gold w-full disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
         disabled={isSubmitting}
       >
         {isSubmitting ? "Submitting..." : "Submit Application"}
@@ -1037,9 +1656,9 @@ function FormFooter({
 
 function SuccessCard({ label }: { label: string }) {
   return (
-    <div className="glass rounded-sm p-10 text-center">
+    <div className="glass rounded-sm p-6 text-center sm:p-10">
       <p className="eyebrow">Received · {label}</p>
-      <h2 className="mt-4 font-serif text-3xl md:text-4xl">
+      <h2 className="mt-4 font-serif text-2xl sm:text-3xl md:text-4xl">
         We&rsquo;ve received your application.
       </h2>
       <p className="mt-4 text-muted-foreground">
