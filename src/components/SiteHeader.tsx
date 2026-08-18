@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import ilsLogo from "@/assets/ils-logo.png";
 
 const nav = [
-  { to: "/", label: "Home" },
-  { to: "/summit", label: "The Summit" },
+  // { to: "/", label: "Home" },
+  // { to: "/summit", label: "The Summit" },
   // { to: "/speakers", label: "Speakers" },
-  { to: "/partners", label: "Partners" },
-  { to: "/about", label: "About" },
+  // { to: "/partners", label: "Partners" },
+  // { to: "/about", label: "About" },
 ] as const;
 
 export function SiteHeader() {
@@ -58,15 +58,27 @@ export function SiteHeader() {
             </Link>
           ))}
 
-          <span
-            className="h-4 w-px bg-gold/25"
-            aria-hidden="true"
-          />
-
+          {/* GOLD REGISTER BUTTON */}
           <Link
             to="/attend"
-            className="text-xs uppercase tracking-[0.22em] text-muted-foreground transition-colors hover:text-gold"
-            activeProps={{ className: "text-gold" }}
+            className="
+              inline-flex
+              items-center
+              justify-center
+              rounded-sm
+              bg-gold
+              px-7
+              py-3.5
+              text-xs
+              font-medium
+              uppercase
+              tracking-[0.22em]
+              text-ink
+              transition-all
+              duration-300
+              hover:bg-gold-soft
+              hover:shadow-[0_0_25px_rgba(212,175,55,0.18)]
+            "
           >
             Register
           </Link>
@@ -106,16 +118,29 @@ export function SiteHeader() {
               </Link>
             ))}
 
-            <span
-              className="h-px w-full bg-gold/25"
-              aria-hidden="true"
-            />
-
+            {/* MOBILE GOLD REGISTER BUTTON */}
             <Link
               to="/attend"
               onClick={() => setOpen(false)}
-              className="text-xs uppercase tracking-[0.25em] text-muted-foreground hover:text-gold"
-              activeProps={{ className: "text-gold" }}
+              className="
+                mt-2
+                inline-flex
+                w-full
+                items-center
+                justify-center
+                rounded-sm
+                bg-gold
+                px-6
+                py-4
+                text-xs
+                font-medium
+                uppercase
+                tracking-[0.25em]
+                text-ink
+                transition-all
+                duration-300
+                hover:bg-gold-soft
+              "
             >
               Register
             </Link>

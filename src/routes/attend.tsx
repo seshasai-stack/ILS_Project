@@ -470,14 +470,17 @@ function AttendPage() {
   return (
     <section className="py-16 sm:py-20 md:py-32">
       <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:px-10">
-        <p className="eyebrow">Register · ILS 2026</p>
+        {/* <p className="eyebrow">Register · ILS 2026</p> */}
         <h1 className="mt-6 font-serif text-4xl leading-tight sm:text-5xl md:text-6xl">
-          Two pathways. One <span className="gold-gradient-text italic">considered</span> room.
+          Registration Amount
+          <div>
+            <span className="gold-gradient-text italic">46,610/-</span>
+            </div>
         </h1>
-        <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground">
+        {/* <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground">
           Attendance is by application. Choose the pathway that fits you best — we route each
           enquiry to a different desk and reply within five working days.
-        </p>
+        </p> */}
 
         {paymentReturn.status === "cancelled" && (
           <div
@@ -503,8 +506,8 @@ function AttendPage() {
               className="rounded-sm border border-border bg-transparent px-4 py-4 text-left data-[state=active]:border-gold data-[state=active]:bg-gold/5 data-[state=active]:shadow-none"
             >
               <div className="flex flex-col items-start">
-                <span className="text-[10px] uppercase tracking-[0.28em] text-gold">Audience A</span>
-                <span className="mt-1 font-serif text-lg">Members</span>
+                {/* <span className="text-[10px] uppercase tracking-[0.28em] text-gold">REGISTRATION</span> */}
+                <span className="mt-1 font-serif text-lg">REGISTRATION</span>
                 {/* <span className="text-[11px] text-muted-foreground">By referral or press</span> */}
               </div>
             </TabsTrigger>

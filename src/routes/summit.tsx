@@ -8,7 +8,7 @@ export const Route = createFileRoute("/summit")({
       {
         name: "description",
         content:
-          "What ILS 2026 is, who is in the room, and how the summit unfolds. November 13–14, 2026, Hyderabad.",
+          "What ILS 2026 is, who is in the room, and how the summit unfolds. November 13th–14th, 2026, Hyderabad.",
       },
     ],
   }),
@@ -45,10 +45,10 @@ const highlights = [
 const agenda = [
   {
     day: "Day 01",
-    date: "13 November 2026",
+    date: "13th November 2026",
     sessions: [
       {
-        time: "10:30 – 11:45",
+        time: "10:30 – 11:45 AM",
         title: "Registrations & Open Networking",
         who: "Arrival & Networking",
       },
@@ -69,7 +69,7 @@ const agenda = [
       },
       {
         time: "4:00 – 5:00 PM",
-        title: "1:1s",
+        title: "121s",
         who: "Curated One-to-One Conversations",
       },
       {
@@ -86,11 +86,11 @@ const agenda = [
   },
   {
     day: "Day 02",
-    date: "14 November 2026",
+    date: "14th November 2026",
     sessions: [
       {
-        time: "10:00 – 11:00",
-        title: "1:1s",
+        time: "10:00 – 11:00 AM",
+        title: "121s",
         who: "Curated One-to-One Conversations",
       },
       {

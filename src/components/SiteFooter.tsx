@@ -13,19 +13,19 @@ export function SiteFooter() {
             </p>
             <div className="mt-6 h-px w-16 bg-gold/60" />
             <p className="mt-6 text-xs uppercase tracking-[0.28em] text-muted-foreground">
-              ILS 2026 &middot; November &middot; Hyderabad
+              ILS 2026 &middot; 13th & 14th November &middot; Hyderabad
             </p>
           </div>
 
           <div className="md:col-span-3">
-            <div className="eyebrow mb-4">Navigate</div>
+            {/* <div className="eyebrow mb-4">Navigate</div>
             <ul className="space-y-2.5 text-sm text-muted-foreground">
               <li><Link to="/summit" className="hover:text-gold">The Summit</Link></li>
-              {/* <li><Link to="/speakers" className="hover:text-gold">Speakers</Link></li> */}
+              <li><Link to="/speakers" className="hover:text-gold">Speakers</Link></li>
               <li><Link to="/attend" className="hover:text-gold">Attend</Link></li>
               <li><Link to="/partners" className="hover:text-gold">Partners</Link></li>
               <li><Link to="/about" className="hover:text-gold">About</Link></li>
-            </ul>
+            </ul> */}
           </div>
 
           <div className="md:col-span-4">
