@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
 import heroBg from "@/assets/hero-bg.jpg";
 import hesaLogo from "@/assets/hesa-logo.jpeg";
+import ilsMainLogo from "@/assets/ils-main-logo.png";
 import { GoldParticles } from "@/components/GoldParticles";
 
 export const Route = createFileRoute("/")({
@@ -16,14 +18,6 @@ export const Route = createFileRoute("/")({
   }),
   component: Home,
 });
-
-const confirmedSpeakers = [
-  "Nandan Nilekani",
-  "Falguni Nayar",
-  "Harsh Mariwala",
-  "Ronnie Screwvala",
-  "Roshni Nadar Malhotra",
-];
 
 const agenda = [
   {
@@ -95,11 +89,171 @@ const agenda = [
   },
 ];
 
-function Home() {
+function clamp(value: number, min = 0, max = 1) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function easeOutCubic(value: number) {
+  return 1 - Math.pow(1 - value, 3);
+}
+
+function AnimatedHero() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const logoAnchorRef = useRef<HTMLDivElement>(null);
+  const logoImageRef = useRef<HTMLImageElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    const logoAnchor = logoAnchorRef.current;
+    const logoImage = logoImageRef.current;
+    const content = contentRef.current;
+
+    if (!section || !logoAnchor || !logoImage || !content) return;
+
+    let rafId = 0;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    const setNavLogoOpacity = (opacity: number) => {
+      const navLogo = document.querySelector<HTMLElement>(
+        "[data-ils-nav-logo]",
+      );
+
+      if (!navLogo) return;
+
+      navLogo.style.opacity = String(opacity);
+      navLogo.style.willChange = "opacity";
+    };
+
+    const update = () => {
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      const isMobile = viewportWidth < 640;
+      const isTablet = viewportWidth >= 640 && viewportWidth < 1024;
+
+      const sectionRect = section.getBoundingClientRect();
+      const scrollRange = Math.max(
+        section.offsetHeight - viewportHeight,
+        1,
+      );
+
+      const progress = clamp(-sectionRect.top / scrollRange);
+
+      const navLogo = document.querySelector<HTMLElement>(
+        "[data-ils-nav-logo]",
+      );
+      const navRect = navLogo?.getBoundingClientRect();
+
+      // Large centered logo dimensions at the beginning of the hero.
+      const startWidth = isMobile
+        ? Math.min(viewportWidth * 0.9, 430)
+        : isTablet
+          ? Math.min(viewportWidth * 0.62, 600)
+          : Math.min(viewportWidth * 0.48, 720);
+
+      const startX = viewportWidth / 2;
+      const startY = isMobile
+        ? viewportHeight * 0.37
+        : viewportHeight * 0.4;
+
+      // The actual navbar logo is the destination, so the animation stays
+      // correct across desktop, tablet and mobile sizes.
+      const endX = navRect
+        ? navRect.left + navRect.width / 2
+        : isMobile
+          ? 76
+          : 150;
+
+      const endY = navRect
+        ? navRect.top + navRect.height / 2
+        : isMobile
+          ? 44
+          : 54;
+
+      const endWidth = navRect?.width ?? (isMobile ? 112 : 148);
+
+      if (reduceMotion.matches) {
+        const showHeroContent = progress > 0.06;
+
+        logoAnchor.style.transform = `translate3d(${startX}px, ${startY}px, 0) translate(-50%, -50%)`;
+        logoImage.style.width = `${startWidth}px`;
+        logoImage.style.transform = "scale(1)";
+        logoAnchor.style.opacity = showHeroContent ? "0" : "1";
+
+        content.style.opacity = showHeroContent ? "1" : "0";
+        content.style.transform = "translate3d(0, 0, 0)";
+        content.style.pointerEvents = showHeroContent ? "auto" : "none";
+        setNavLogoOpacity(showHeroContent ? 1 : 0);
+        return;
+      }
+
+      // The travel finishes before the sticky hero ends, leaving time for
+      // the copy to settle naturally before the next section arrives.
+      const travelProgress = easeOutCubic(clamp(progress / 0.64));
+
+      const x = startX + (endX - startX) * travelProgress;
+      const y = startY + (endY - startY) * travelProgress;
+
+      const targetScale = clamp(endWidth / startWidth, 0.1, 1);
+      const scale = 1 + (targetScale - 1) * travelProgress;
+
+      logoAnchor.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
+      logoImage.style.width = `${startWidth}px`;
+      logoImage.style.transform = `scale(${scale})`;
+
+      // Since the hero and navbar images are intentionally different,
+      // cross-fade them only near the end of the movement. This makes the
+      // transition feel like one mark transforms into the other.
+      const morphProgress = clamp((progress - 0.5) / 0.14);
+      logoAnchor.style.opacity = String(1 - morphProgress);
+      setNavLogoOpacity(morphProgress);
+
+      // Reveal the original hero content while the logo travels upward.
+      const revealProgress = easeOutCubic(clamp((progress - 0.24) / 0.34));
+      content.style.opacity = String(revealProgress);
+      content.style.transform = `translate3d(0, ${44 * (1 - revealProgress)}px, 0)`;
+      content.style.pointerEvents = revealProgress > 0.8 ? "auto" : "none";
+    };
+
+    const requestUpdate = () => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(update);
+    };
+
+    // Hide the compact navbar mark at the start so the page opens with only
+    // the large ILS banner logo.
+    setNavLogoOpacity(0);
+    update();
+
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+    reduceMotion.addEventListener?.("change", requestUpdate);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+      reduceMotion.removeEventListener?.("change", requestUpdate);
+
+      const navLogo = document.querySelector<HTMLElement>(
+        "[data-ils-nav-logo]",
+      );
+
+      // Important when navigating away from the home route.
+      if (navLogo) {
+        navLogo.style.opacity = "1";
+        navLogo.style.willChange = "auto";
+      }
+    };
+  }, []);
+
   return (
-    <>
-      {/* HERO */}
-      <section className="relative isolate flex min-h-[92vh] items-center overflow-hidden">
+    <section
+      ref={sectionRef}
+      className="relative isolate h-[165svh] sm:h-[160vh] lg:h-[150vh]"
+    >
+      <div className="sticky top-0 h-[100svh] overflow-hidden sm:h-screen">
+        {/* Same background as the current hero */}
         <img
           src={heroBg}
           alt=""
@@ -112,45 +266,88 @@ function Home() {
 
         <GoldParticles count={22} />
 
-        <div className="mx-auto max-w-6xl px-6 lg:px-10">
-          <h1 className="reveal reveal-delay-1 mt-6 font-serif text-5xl leading-[1.05] tracking-tight sm:text-6xl md:text-7xl lg:text-[88px]">
-            India&rsquo;s most{" "}
-            <span className="gold-gradient-text italic">consequential</span>
-            <br />
-            gathering of ambitious
-            <br />
-            entrepreneurs.
-          </h1>
+        {/* LARGE ILS INTRO LOGO */}
+        <div
+          ref={logoAnchorRef}
+          className="pointer-events-none absolute left-0 top-0 z-30"
+          style={{
+            transform: "translate3d(50vw, 37svh, 0) translate(-50%, -50%)",
+            willChange: "transform, opacity",
+          }}
+          aria-hidden="true"
+        >
+          <img
+            ref={logoImageRef}
+            src={ilsMainLogo}
+            alt=""
+            draggable={false}
+            className="block h-auto max-w-none select-none object-contain"
+            style={{
+              width: "min(90vw, 430px)",
+              transformOrigin: "center center",
+              willChange: "width, transform",
+            }}
+          />
+        </div>
 
-          <div className="reveal reveal-delay-2 mt-10 flex flex-wrap items-center gap-x-10 gap-y-4">
-            <span className="text-sm uppercase tracking-[0.28em] text-muted-foreground">
-              13th & 14th November 2026
-            </span>
+        {/* ORIGINAL HERO COPY — revealed during the shrink animation */}
+        <div
+          ref={contentRef}
+          className="pointer-events-none absolute inset-0 z-20 flex items-center pt-16 opacity-0 sm:pt-20"
+          style={{
+            transform: "translate3d(0, 44px, 0)",
+            willChange: "opacity, transform",
+          }}
+        >
+          <div className="mx-auto w-full max-w-6xl px-5 sm:px-6 lg:px-10">
+            <h1 className="max-w-[1100px] font-serif text-[clamp(2.25rem,11vw,3.5rem)] leading-[1.02] tracking-tight sm:text-6xl md:text-7xl lg:text-[88px]">
+              India&rsquo;s most{" "}
+              <span className="gold-gradient-text italic">consequential</span>
+              <br className="hidden sm:block" />
+              {" "}gathering of ambitious
+              <br className="hidden sm:block" />
+              {" "}entrepreneurs.
+            </h1>
 
-            <span className="h-px w-10 bg-gold/60" />
+            <div className="mt-7 flex flex-wrap items-center gap-x-4 gap-y-3 sm:mt-10 sm:gap-x-10 sm:gap-y-4">
+              <span className="basis-full text-[10px] uppercase tracking-[0.24em] text-muted-foreground sm:basis-auto sm:text-sm sm:tracking-[0.28em]">
+                13th &amp; 14th November 2026
+              </span>
 
-            <span className="text-sm uppercase tracking-[0.28em] text-muted-foreground">
-              Novotel
-            </span>
+              <span className="hidden h-px w-10 bg-gold/60 sm:block" />
 
-            <span className="h-px w-10 bg-gold/60" />
+              <span className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground sm:text-sm sm:tracking-[0.28em]">
+                Novotel
+              </span>
 
-            <span className="text-sm uppercase tracking-[0.28em] text-muted-foreground">
-              Hyderabad
-            </span>
-          </div>
+              <span className="h-px w-6 bg-gold/60 sm:w-10" />
 
-          <div className="reveal reveal-delay-3 mt-12 flex flex-wrap items-center gap-6">
-            <Link to="/attend">
-              <span className="btn-gold">Register Now</span>
-            </Link>
+              <span className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground sm:text-sm sm:tracking-[0.28em]">
+                Hyderabad
+              </span>
+            </div>
+
+            <div className="mt-8 flex flex-wrap items-center gap-6 sm:mt-12">
+              <Link to="/attend">
+                <span className="btn-gold">Register Now</span>
+              </Link>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
+  );
+}
+
+function Home() {
+  return (
+    <>
+      {/* HERO WITH RESPONSIVE LOGO-TO-NAV ANIMATION */}
+      <AnimatedHero />
 
       {/* TENOR / INSIDER LINE */}
-      <section className="relative border-y border-border/40 bg-ink/60 py-24">
-        <div className="mx-auto max-w-4xl px-6 text-center lg:px-10">
+      <section className="relative border-y border-border/40 bg-ink/60 py-20 sm:py-24">
+        <div className="mx-auto max-w-4xl px-5 text-center sm:px-6 lg:px-10">
           <p className="font-serif text-2xl italic leading-relaxed text-foreground/90 md:text-3xl">
             &ldquo;The room is the product. Everything else is staging.&rdquo;
           </p>
@@ -160,15 +357,15 @@ function Home() {
       </section>
 
       {/* TITLE SPONSOR */}
-      <section className="py-28">
-        <div className="mx-auto grid max-w-6xl gap-16 px-6 lg:grid-cols-12 lg:px-10">
+      <section className="py-20 sm:py-24 lg:py-28">
+        <div className="mx-auto grid max-w-6xl gap-12 px-5 sm:gap-16 sm:px-6 lg:grid-cols-12 lg:px-10">
           {/* LEFT SIDE */}
           <div className="lg:col-span-5">
             <p className="eyebrow">Title Sponsor</p>
 
             {/* HESA LOGO */}
             <div className="mt-6 flex">
-              <div className="relative h-[145px] w-[340px] overflow-hidden rounded-sm bg-white md:h-[160px] md:w-[380px]">
+              <div className="relative h-[125px] w-full max-w-[380px] overflow-hidden rounded-sm bg-white sm:h-[145px] md:h-[160px]">
                 <img
                   src={hesaLogo}
                   alt="Hesa — Connecting Bharat Phygitally"
@@ -203,20 +400,18 @@ function Home() {
       </section>
 
       {/* SCHEDULE */}
-      <section className="border-t border-border/40 py-28">
-        <div className="mx-auto max-w-5xl px-6 lg:px-10">
+      <section className="border-t border-border/40 py-20 sm:py-24 lg:py-28">
+        <div className="mx-auto max-w-5xl px-5 sm:px-6 lg:px-10">
           <p className="eyebrow">The Arc of the Summit</p>
 
-          <h2 className="mt-4 font-serif text-4xl md:text-5xl">
-            Schedule
-          </h2>
+          <h2 className="mt-4 font-serif text-4xl md:text-5xl">Schedule</h2>
 
           {/* BOTH DAYS */}
-          <div className="mt-16 space-y-24">
+          <div className="mt-12 space-y-20 sm:mt-16 sm:space-y-24">
             {agenda.map((agendaDay) => (
               <div key={agendaDay.date}>
                 {/* DAY HEADING */}
-                <div className="mb-12">
+                <div className="mb-10 sm:mb-12">
                   <p className="eyebrow">{agendaDay.day}</p>
 
                   <h3 className="mt-3 font-serif text-3xl md:text-4xl">
@@ -229,30 +424,14 @@ function Home() {
                   {/* VERTICAL GOLD LINE */}
                   <div className="absolute bottom-2 left-[180px] top-2 hidden w-px bg-gradient-to-b from-gold/60 via-gold/30 to-transparent md:block" />
 
-                  <ul className="space-y-10">
+                  <ul className="space-y-9 sm:space-y-10">
                     {agendaDay.sessions.map((session) => (
                       <li
                         key={`${agendaDay.date}-${session.time}-${session.title}`}
-                        className="
-                          grid
-                          grid-cols-1
-                          gap-3
-                          md:grid-cols-[180px_24px_1fr]
-                          md:gap-x-8
-                          md:gap-y-0
-                        "
+                        className="grid grid-cols-1 gap-3 md:grid-cols-[180px_24px_1fr] md:gap-x-8 md:gap-y-0"
                       >
                         {/* TIME */}
-                        <span
-                          className="
-                            whitespace-nowrap
-                            font-serif
-                            text-xl
-                            text-gold
-                            md:pr-6
-                            md:text-2xl
-                          "
-                        >
+                        <span className="font-serif text-xl text-gold md:whitespace-nowrap md:pr-6 md:text-2xl">
                           {session.time}
                         </span>
 
@@ -267,7 +446,7 @@ function Home() {
                             {session.title}
                           </h4>
 
-                          <p className="mt-1 text-sm uppercase tracking-[0.2em] text-muted-foreground">
+                          <p className="mt-1 text-xs uppercase tracking-[0.18em] text-muted-foreground sm:text-sm sm:tracking-[0.2em]">
                             {session.who}
                           </p>
                         </div>
@@ -282,9 +461,9 @@ function Home() {
       </section>
 
       {/* CTA STRIP */}
-      <section className="relative overflow-hidden border-t border-border/40 bg-ink py-24">
-        <div className="mx-auto max-w-5xl px-6 text-center lg:px-10">
-          <h2 className="mt-5 font-serif text-4xl md:text-5xl">
+      <section className="relative overflow-hidden border-t border-border/40 bg-ink py-20 sm:py-24">
+        <div className="mx-auto max-w-5xl px-5 text-center sm:px-6 lg:px-10">
+          <h2 className="mt-5 font-serif text-3xl sm:text-4xl md:text-5xl">
             If this is your room, we&rsquo;d like to know.
           </h2>
 

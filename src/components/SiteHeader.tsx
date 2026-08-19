@@ -2,13 +2,17 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import ilsLogo from "@/assets/ils-logo.png";
 
-const nav = [
+type NavItem = {
+  to: "/" | "/summit" | "/partners" | "/about";
+  label: string;
+};
+
+const nav: readonly NavItem[] = [
   // { to: "/", label: "Home" },
   // { to: "/summit", label: "The Summit" },
-  // { to: "/speakers", label: "Speakers" },
   // { to: "/partners", label: "Partners" },
   // { to: "/about", label: "About" },
-] as const;
+];
 
 export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
@@ -29,8 +33,8 @@ export function SiteHeader() {
         scrolled ? "glass py-3" : "bg-transparent py-5"
       }`}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-10">
-        {/* LOGO */}
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-5 sm:px-6 lg:px-10">
+        {/* LOGO — destination for the large hero-logo animation */}
         <Link
           to="/"
           onClick={() => setOpen(false)}
@@ -38,13 +42,14 @@ export function SiteHeader() {
           aria-label="India Leadership Summit Home"
         >
           <img
+            data-ils-nav-logo
             src={ilsLogo}
             alt="India Leadership Summit"
-            className="h-11 w-auto object-contain sm:h-12 md:h-14"
+            className="h-9 w-auto object-contain sm:h-12 md:h-14"
           />
         </Link>
 
-        {/* DESKTOP NAVIGATION */}
+        {/* DESKTOP */}
         <nav className="hidden items-center gap-10 md:flex">
           {nav.map((n) => (
             <Link
@@ -58,29 +63,8 @@ export function SiteHeader() {
             </Link>
           ))}
 
-          {/* GOLD REGISTER BUTTON */}
-          <Link
-            to="/attend"
-            className="
-              inline-flex
-              items-center
-              justify-center
-              rounded-sm
-              bg-gold
-              px-7
-              py-3.5
-              text-xs
-              font-medium
-              uppercase
-              tracking-[0.22em]
-              text-ink
-              transition-all
-              duration-300
-              hover:bg-gold-soft
-              hover:shadow-[0_0_25px_rgba(212,175,55,0.18)]
-            "
-          >
-            Register
+          <Link to="/attend">
+            <span className="btn-gold">Register</span>
           </Link>
         </nav>
 
@@ -88,14 +72,14 @@ export function SiteHeader() {
         <div className="flex items-center gap-3 md:hidden">
           <button
             type="button"
-            className="flex h-11 w-11 items-center justify-center text-gold"
-            onClick={() => setOpen((v) => !v)}
+            className="flex h-10 w-10 items-center justify-center text-gold sm:h-11 sm:w-11"
+            onClick={() => setOpen((value) => !value)}
             aria-label="Toggle menu"
             aria-expanded={open}
           >
             <div className="space-y-1.5">
-              <span className="block h-px w-6 bg-gold" />
-              <span className="block h-px w-6 bg-gold" />
+              <span className="block h-px w-5 bg-gold sm:w-6" />
+              <span className="block h-px w-5 bg-gold sm:w-6" />
             </div>
           </button>
         </div>
@@ -103,7 +87,7 @@ export function SiteHeader() {
 
       {/* MOBILE NAVIGATION */}
       {open && (
-        <div className="glass mx-6 mt-3 rounded-sm p-6 md:hidden">
+        <div className="glass mx-4 mt-3 rounded-sm p-5 sm:mx-6 sm:p-6 md:hidden">
           <nav className="flex flex-col gap-4">
             {nav.map((n) => (
               <Link
@@ -118,31 +102,8 @@ export function SiteHeader() {
               </Link>
             ))}
 
-            {/* MOBILE GOLD REGISTER BUTTON */}
-            <Link
-              to="/attend"
-              onClick={() => setOpen(false)}
-              className="
-                mt-2
-                inline-flex
-                w-full
-                items-center
-                justify-center
-                rounded-sm
-                bg-gold
-                px-6
-                py-4
-                text-xs
-                font-medium
-                uppercase
-                tracking-[0.25em]
-                text-ink
-                transition-all
-                duration-300
-                hover:bg-gold-soft
-              "
-            >
-              Register
+            <Link to="/attend" onClick={() => setOpen(false)}>
+              <span className="btn-gold inline-flex">Register</span>
             </Link>
           </nav>
         </div>
