@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import ilsLogo from "@/assets/ils-logo.png";
+import ilsLogo from "@/assets/nav-ils-main-logo.png";
 
 type NavItem = {
   to: "/" | "/summit" | "/partners" | "/about";
@@ -30,10 +30,10 @@ export function SiteHeader() {
   return (
     <header
       className={`fixed left-0 right-0 top-0 z-50 transition-all duration-500 ${
-        scrolled ? "glass py-3" : "bg-transparent py-5"
+        scrolled ? "glass py-2.5" : "bg-transparent py-3"
       }`}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-5 sm:px-6 lg:px-10">
+      <div className="mx-auto flex min-h-[72px] max-w-7xl items-center justify-between px-5 sm:min-h-[76px] sm:px-6 md:min-h-[80px] lg:px-10">
         {/* LOGO — destination for the large hero-logo animation */}
         <Link
           to="/"
@@ -45,7 +45,7 @@ export function SiteHeader() {
             data-ils-nav-logo
             src={ilsLogo}
             alt="India Leadership Summit"
-            className="h-9 w-auto object-contain sm:h-12 md:h-14"
+            className="h-auto w-[120px] object-contain object-left sm:w-[140px] md:w-[155px] lg:w-[170px] xl:w-[185px]"
           />
         </Link>
 
@@ -64,7 +64,9 @@ export function SiteHeader() {
           ))}
 
           <Link to="/attend">
-            <span className="btn-gold">Register</span>
+            <span className="btn-gold inline-flex min-h-[52px] items-center justify-center px-8">
+              Register
+            </span>
           </Link>
         </nav>
 
@@ -87,7 +89,7 @@ export function SiteHeader() {
 
       {/* MOBILE NAVIGATION */}
       {open && (
-        <div className="glass mx-4 mt-3 rounded-sm p-5 sm:mx-6 sm:p-6 md:hidden">
+        <div className="glass mx-4 mt-2 rounded-sm p-5 sm:mx-6 sm:p-6 md:hidden">
           <nav className="flex flex-col gap-4">
             {nav.map((n) => (
               <Link
@@ -103,7 +105,9 @@ export function SiteHeader() {
             ))}
 
             <Link to="/attend" onClick={() => setOpen(false)}>
-              <span className="btn-gold inline-flex">Register</span>
+              <span className="btn-gold inline-flex w-full items-center justify-center py-4">
+                Register
+              </span>
             </Link>
           </nav>
         </div>

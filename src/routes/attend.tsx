@@ -474,7 +474,7 @@ function AttendPage() {
         <h1 className="mt-6 font-serif text-4xl leading-tight sm:text-5xl md:text-6xl">
           Registration Amount
           <div>
-            <span className="gold-gradient-text italic">46,610/-</span>
+            <span className="gold-gradient-text italic">39,500 + GST</span>
             </div>
         </h1>
         {/* <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground">
