@@ -101,15 +101,37 @@ function AnimatedHero() {
   const sectionRef = useRef<HTMLElement>(null);
   const logoAnchorRef = useRef<HTMLDivElement>(null);
   const logoImageRef = useRef<HTMLImageElement>(null);
+  const introInfoRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+
+  const handleKnowMore = () => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const viewportHeight = window.innerHeight;
+    const sectionTop = window.scrollY + section.getBoundingClientRect().top;
+    const scrollRange = Math.max(section.offsetHeight - viewportHeight, 1);
+
+    // Advance to the next hero stage: logo reaches the nav and
+    // the existing headline/content becomes fully visible.
+    const targetProgress = 0.64;
+
+    window.scrollTo({
+      top: sectionTop + scrollRange * targetProgress,
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "auto"
+        : "smooth",
+    });
+  };
 
   useEffect(() => {
     const section = sectionRef.current;
     const logoAnchor = logoAnchorRef.current;
     const logoImage = logoImageRef.current;
+    const introInfo = introInfoRef.current;
     const content = contentRef.current;
 
-    if (!section || !logoAnchor || !logoImage || !content) return;
+    if (!section || !logoAnchor || !logoImage || !introInfo || !content) return;
 
     let rafId = 0;
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -156,6 +178,25 @@ function AnimatedHero() {
         ? viewportHeight * 0.37
         : viewportHeight * 0.4;
 
+      // Position the date/location and Know More CTA directly under the
+      // large logo. We calculate this from the logo's real aspect ratio
+      // so it remains correct on phones, tablets and desktops.
+      const logoAspectRatio =
+        logoImage.naturalWidth > 0 && logoImage.naturalHeight > 0
+          ? logoImage.naturalWidth / logoImage.naturalHeight
+          : 1.366;
+
+      const startLogoHeight = startWidth / logoAspectRatio;
+      const introGap = isMobile ? 12 : isTablet ? 18 : 22;
+
+      const idealIntroY = startY + startLogoHeight / 2 + introGap;
+      const minIntroY = isMobile
+        ? viewportHeight * 0.61
+        : viewportHeight * 0.66;
+      const maxIntroY = viewportHeight - (isMobile ? 165 : 150);
+
+      const introY = clamp(idealIntroY, minIntroY, maxIntroY);
+
       // The actual navbar logo is the destination, so the animation stays
       // correct across desktop, tablet and mobile sizes.
       const endX = navRect
@@ -180,6 +221,10 @@ function AnimatedHero() {
         logoImage.style.transform = "scale(1)";
         logoAnchor.style.opacity = showHeroContent ? "0" : "1";
 
+        introInfo.style.transform = `translate3d(${startX}px, ${introY}px, 0) translateX(-50%)`;
+        introInfo.style.opacity = showHeroContent ? "0" : "1";
+        introInfo.style.pointerEvents = showHeroContent ? "none" : "auto";
+
         content.style.opacity = showHeroContent ? "1" : "0";
         content.style.transform = "translate3d(0, 0, 0)";
         content.style.pointerEvents = showHeroContent ? "auto" : "none";
@@ -200,6 +245,14 @@ function AnimatedHero() {
       logoAnchor.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
       logoImage.style.width = `${startWidth}px`;
       logoImage.style.transform = `scale(${scale})`;
+
+      // Keep the event details visually attached below the opening logo,
+      // then fade them away before the main hero copy appears.
+      const introFadeProgress = easeOutCubic(clamp(progress / 0.2));
+      introInfo.style.transform = `translate3d(${startX}px, ${introY - 10 * introFadeProgress}px, 0) translateX(-50%)`;
+      introInfo.style.opacity = String(1 - introFadeProgress);
+      introInfo.style.pointerEvents =
+        introFadeProgress < 0.7 ? "auto" : "none";
 
       // Since the hero and navbar images are intentionally different,
       // cross-fade them only near the end of the movement. This makes the
@@ -288,6 +341,67 @@ function AnimatedHero() {
               willChange: "width, transform",
             }}
           />
+        </div>
+
+        {/* INTRO DETAILS — centered directly below the large opening logo */}
+        <div
+          ref={introInfoRef}
+          className="absolute left-0 top-0 z-30 w-[calc(100%_-_2rem)] max-w-[980px] text-center"
+          style={{
+            transform: "translate3d(50vw, 66svh, 0) translateX(-50%)",
+            willChange: "transform, opacity",
+          }}
+        >
+          <div
+            className="
+              flex flex-wrap items-center justify-center
+              gap-x-2 gap-y-1
+              px-2 text-center
+              font-serif font-medium text-gold
+              text-[15px] leading-snug tracking-[0.06em]
+              sm:gap-x-3 sm:text-lg sm:tracking-[0.08em]
+              md:text-xl
+              lg:text-2xl
+            "
+          >
+            <span className="basis-full sm:basis-auto">
+              13th &amp; 14th November
+            </span>
+
+            <span className="hidden sm:inline" aria-hidden="true">
+              &middot;
+            </span>
+
+            <span>Novotel</span>
+
+            <span aria-hidden="true">&middot;</span>
+
+            <span>Hyderabad</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleKnowMore}
+            className="
+              group mt-5 inline-flex min-h-11 items-center justify-center gap-3
+              border border-gold/70 bg-black/20 px-6 py-3
+              text-[11px] font-medium uppercase tracking-[0.24em] text-gold
+              backdrop-blur-sm transition-all duration-300
+              hover:border-gold hover:bg-gold hover:text-black
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold
+              focus-visible:ring-offset-2 focus-visible:ring-offset-black
+              sm:mt-6 sm:min-h-12 sm:px-8 sm:text-xs
+            "
+            aria-label="Know more about India Leadership Summit"
+          >
+            Know More
+            <span
+              aria-hidden="true"
+              className="text-base leading-none transition-transform duration-300 group-hover:translate-y-1"
+            >
+              &darr;
+            </span>
+          </button>
         </div>
 
         {/* ORIGINAL HERO COPY — revealed during the shrink animation */}
