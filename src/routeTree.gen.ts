@@ -16,6 +16,7 @@ import { Route as ReturnPolicyRouteImport } from './routes/return-policy'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as PartnersRouteImport } from './routes/partners'
 import { Route as AttendRouteImport } from './routes/attend'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -54,6 +55,11 @@ const AttendRoute = AttendRouteImport.update({
   path: '/attend',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -68,6 +74,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/analytics': typeof AnalyticsRoute
   '/attend': typeof AttendRoute
   '/partners': typeof PartnersRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/analytics': typeof AnalyticsRoute
   '/attend': typeof AttendRoute
   '/partners': typeof PartnersRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
@@ -91,6 +99,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/analytics': typeof AnalyticsRoute
   '/attend': typeof AttendRoute
   '/partners': typeof PartnersRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
@@ -104,6 +113,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/analytics'
     | '/attend'
     | '/partners'
     | '/privacy-policy'
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/analytics'
     | '/attend'
     | '/partners'
     | '/privacy-policy'
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/analytics'
     | '/attend'
     | '/partners'
     | '/privacy-policy'
@@ -138,6 +150,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AnalyticsRoute: typeof AnalyticsRoute
   AttendRoute: typeof AttendRoute
   PartnersRoute: typeof PartnersRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
@@ -198,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AttendRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -218,6 +238,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AnalyticsRoute: AnalyticsRoute,
   AttendRoute: AttendRoute,
   PartnersRoute: PartnersRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
