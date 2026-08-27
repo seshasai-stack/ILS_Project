@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import heroBg from "@/assets/hero-bg.jpg";
 import hesaLogo from "@/assets/hesa-logo.jpeg";
-import ilsMainLogo from "@/assets/ils-main-logo.png";
+import ilsMainLogo from "@/assets/ils-main-logo-v2.png";
+import ilsVideo from "@/assets/ILS-NEW-V2.mp4";
 import { GoldParticles } from "@/components/GoldParticles";
 
 export const Route = createFileRoute("/")({
@@ -25,12 +26,12 @@ const agenda = [
     date: "13th November 2026",
     sessions: [
       {
-        time: "10:30 – 11:45 AM",
+        time: "10:30 – 11:15 AM",
         title: "Registrations & Open Networking",
         who: "Arrival & Networking",
       },
       {
-        time: "12:00 – 1:30 PM",
+        time: "11:30 – 1:15 PM",
         title: "Main Keynote Speaker",
         who: "Keynote",
       },
@@ -453,6 +454,76 @@ function AnimatedHero() {
   );
 }
 
+
+function SummitVideo() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    const video = videoRef.current;
+
+    if (!section || !video) return;
+
+    // Keep the initial state compatible with browser autoplay rules.
+    video.muted = true;
+    video.defaultMuted = true;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          const playPromise = video.play();
+
+          if (playPromise !== undefined) {
+            playPromise.catch(() => {
+              // Autoplay can still be blocked by browser/user settings.
+              // The native controls remain available as a fallback.
+            });
+          }
+        } else {
+          video.pause();
+        }
+      },
+      {
+        // Start once the video is meaningfully visible on both mobile and desktop.
+        threshold: 0.35,
+      },
+    );
+
+    observer.observe(section);
+
+    return () => {
+      observer.disconnect();
+      video.pause();
+    };
+  }, []);
+
+  return (
+    <section
+      ref={sectionRef}
+      className="relative overflow-hidden border-b border-border/40 bg-black"
+      aria-label="India Leadership Summit video"
+    >
+      <div className="mx-auto w-full max-w-[1600px] px-0 py-6 sm:px-6 sm:py-10 lg:px-10 lg:py-14">
+        <div className="relative w-full overflow-hidden bg-black sm:rounded-sm">
+          <video
+            ref={videoRef}
+            src={ilsVideo}
+            muted
+            defaultMuted
+            playsInline
+            controls
+            preload="metadata"
+            className="block h-auto max-h-[90svh] w-full object-contain sm:max-h-[88vh]"
+          >
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Home() {
   return (
     <>
@@ -469,6 +540,9 @@ function Home() {
           <div className="mx-auto mt-8 h-px w-24 bg-gold/50" />
         </div>
       </section>
+
+      {/* SUMMIT VIDEO — autoplay on scroll, muted initially, responsive */}
+      <SummitVideo />
 
       {/* TITLE SPONSOR */}
       <section className="py-20 sm:py-24 lg:py-28">
@@ -518,7 +592,7 @@ function Home() {
         <div className="mx-auto max-w-5xl px-5 sm:px-6 lg:px-10">
           <p className="eyebrow">The Arc of the Summit</p>
 
-          <h2 className="mt-4 font-serif text-4xl md:text-5xl">Schedule</h2>
+          <h2 className="mt-4 font-serif text-4xl md:text-5xl">SCHEDULE</h2>
 
           {/* BOTH DAYS */}
           <div className="mt-12 space-y-20 sm:mt-16 sm:space-y-24">
