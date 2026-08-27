@@ -26,7 +26,7 @@ const agenda = [
     date: "13th November 2026",
     sessions: [
       {
-        time: "10:30 – 11:15 AM",
+        time: "10:00 – 11:15 AM",
         title: "Registrations & Open Networking",
         who: "Arrival & Networking",
       },
