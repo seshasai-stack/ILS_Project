@@ -92,6 +92,9 @@ function loadRazorpayCheckout(): Promise<void> {
   return razorpayScriptPromise;
 }
 
+// Backend/payment amount remains the current early-access fee.
+// The regular fee is display-only so the backend/payment flow is not disturbed.
+const REGULAR_REGISTRATION_FEE = 50_000;
 const REGISTRATION_FEE = 39_500;
 const GST_RATE = 18;
 const GST_AMOUNT = (REGISTRATION_FEE * GST_RATE) / 100;
@@ -204,6 +207,31 @@ const countryOptions = [
   "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen",
   "Zambia", "Zimbabwe",
 ];
+
+const cityOptions = [
+  "Jaipur",
+  "Mumbai",
+  "Nagpur",
+  "Bangalore",
+  "Bhubaneswar",
+  "Coimbatore",
+  "Delhi",
+  "Salem",
+  "Raipur",
+  "Chennai",
+  "Kolkata",
+  "Kochi",
+  "Chandigarh",
+  "Ahmedabad",
+  "Rajkot",
+  "Surat",
+  "Ludhiana",
+  "Baroda",
+  "Bhopal",
+  "Hosur",
+  "Erode",
+  "Other",
+] as const;
 
 const audienceASchema = z
   .object({
@@ -470,13 +498,39 @@ function AttendPage() {
   return (
     <section className="py-16 sm:py-20 md:py-32">
       <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:px-10">
-        {/* <p className="eyebrow">Register · ILS 2026</p> */}
-        <h1 className="mt-6 font-serif text-4xl leading-tight sm:text-5xl md:text-6xl">
-          Registration Amount
-          <div>
-            <span className="gold-gradient-text italic">39,500 + GST</span>
+        {/* REGISTRATION PRICING */}
+        <div className="mt-2 overflow-hidden rounded-sm border border-gold/25 bg-background/70">
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+            <div className="px-5 py-6 text-center sm:px-6 sm:py-7">
+              <p className="font-serif text-xl uppercase tracking-[0.02em] text-foreground/95 sm:text-2xl">
+                Registration Fee
+              </p>
+              <p className="mt-2 font-serif text-2xl text-foreground sm:text-3xl">
+                ₹ {REGULAR_REGISTRATION_FEE.toLocaleString("en-IN")} + GST
+              </p>
             </div>
-        </h1>
+
+            <div
+              aria-hidden="true"
+              className="mx-5 h-px bg-border/80 sm:mx-0 sm:h-12 sm:w-px"
+            />
+
+            <div className="px-5 py-6 text-center sm:px-6 sm:py-7">
+              <p className="font-serif text-xl uppercase tracking-[0.02em] text-gold sm:text-2xl">
+                Early Access Price
+              </p>
+              <p className="mt-2 font-serif text-2xl text-gold sm:text-3xl">
+                ₹ {REGISTRATION_FEE.toLocaleString("en-IN")} + GST
+              </p>
+            </div>
+          </div>
+
+          {/* <div className="border-t border-gold/35 px-4 py-4 sm:px-6">
+            <div className="flex min-h-14 items-center justify-center border border-gold/55 px-4 py-3 text-center font-serif text-lg uppercase tracking-[0.03em] text-foreground sm:text-xl">
+              Registration
+            </div>
+          </div> */}
+        </div>
         {/* <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground">
           Attendance is by application. Choose the pathway that fits you best — we route each
           enquiry to a different desk and reply within five working days.
@@ -624,6 +678,7 @@ function PaymentStatusCard({
 // -------------------- Audience A form --------------------
 function AudienceAForm() {
   const [data, setData] = useState<AudienceAState>(initialA);
+  const [citySelection, setCitySelection] = useState("");
   const [errors, setErrors] = useState<
     Partial<Record<keyof AudienceAState, string>>
   >({});
@@ -1139,15 +1194,40 @@ function AudienceAForm() {
               required
             />
 
-            <Field
+            <SelectField
               label="City"
-              id="a-city"
-              value={data.city}
-              onChange={(v) => update("city", v)}
-              error={errors.city}
+              id="a-city-select"
+              value={citySelection}
+              onChange={(value) => {
+                setCitySelection(value);
+
+                // Keep the backend payload unchanged: `city` always receives
+                // the actual city name, whether selected or manually entered.
+                if (value === "Other") {
+                  update("city", "");
+                } else {
+                  update("city", value);
+                }
+              }}
+              options={cityOptions}
+              error={citySelection === "Other" ? undefined : errors.city}
+              placeholder="Select city"
               required
             />
           </div>
+
+          {citySelection === "Other" && (
+            <div className="w-full">
+              <Field
+                label="Enter City"
+                id="a-city-other"
+                value={data.city}
+                onChange={(v) => update("city", v)}
+                error={errors.city}
+                required
+              />
+            </div>
+          )}
 
           <div className="grid gap-6 md:grid-cols-2">
             <Field
