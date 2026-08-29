@@ -1075,7 +1075,7 @@ function AudienceAForm() {
         {/* 9. Sponsorship */}
         <div>
           <p className="eyebrow max-w-full break-words leading-5 sm:leading-6">
-            Are you interested in sponsorship opportunities for the 2026 Global
+            Are you interested in sponsorship opportunities for the 2026 India
             Leadership Summit?
           </p>
 
