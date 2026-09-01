@@ -37,7 +37,7 @@ type AnalyticsResponse = {
   trends: Array<{ date: string; registrations: number; revenue: number }>;
   breakdowns: {
     paymentStatus: Breakdown[]; registrationType: Breakdown[];
-    industry: Breakdown[]; country: Breakdown[];
+    industry: Breakdown[]; country: Breakdown[]; city?: Breakdown[];
   };
   table: {
     rows: AnalyticsRow[];
@@ -178,9 +178,10 @@ function Dashboard({ data, page, setPage, search, setSearch, status, setStatus }
       </ChartCard>
     </section>
 
-    <section className="mt-6 grid gap-6 lg:grid-cols-2">
+    <section className="mt-6 grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
       <BreakdownBar title="Registration mix" subtitle="Paid attendees by registration type" data={data.breakdowns.registrationType.slice(0, 8)} />
       <BreakdownBar title="Industry representation" subtitle="Top industries among paid attendees" data={data.breakdowns.industry.slice(0, 8)} />
+      <BreakdownBar title="Registrations by city" subtitle="Top cities selected by paid attendees" data={(data.breakdowns.city ?? []).slice(0, 8)} />
     </section>
 
     <RecordsTable data={data} page={page} setPage={setPage} search={search} setSearch={setSearch} status={status} setStatus={setStatus} />
