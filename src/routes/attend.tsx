@@ -92,13 +92,17 @@ function loadRazorpayCheckout(): Promise<void> {
   return razorpayScriptPromise;
 }
 
-// Backend/payment amount remains the current early-access fee.
-// The regular fee is display-only so the backend/payment flow is not disturbed.
-const REGULAR_REGISTRATION_FEE = 50_000;
-const REGISTRATION_FEE = 39_500;
 const GST_RATE = 18;
-const GST_AMOUNT = (REGISTRATION_FEE * GST_RATE) / 100;
-const TOTAL_AMOUNT = REGISTRATION_FEE + GST_AMOUNT;
+
+function getRegistrationPricing(registrationType: string) {
+  const baseAmount = registrationType === "Member + Spouse"
+    ? 49_500
+    : registrationType === "Spouse"
+      ? 10_000
+      : 39_500;
+  const gstAmount = (baseAmount * GST_RATE) / 100;
+  return { baseAmount, gstRate: GST_RATE, gstAmount, totalAmount: baseAmount + gstAmount };
+}
 
 const formatINR = (amount: number) =>
   new Intl.NumberFormat("en-IN", {
@@ -125,10 +129,10 @@ export const Route = createFileRoute("/attend")({
 const registrationTypeOptions = [
   "Member",
   "Chapter Director",
-  "National Director",
+  "Member + Spouse",
   "Executive Director",
-  "Admin",
-  "Guest/Visitor"
+  "Spouse",
+  "Guest/Non-member",
 ];
 
 const industryOptions = [
@@ -261,25 +265,13 @@ const audienceASchema = z
     chapterName: z
       .string()
       .trim()
-      .min(2, "Please enter your chapter name, market or region")
       .max(150),
 
-    organization: z
-      .string()
-      .trim()
-      .min(2, "Please enter your company")
-      .max(150),
+    organization: z.string().trim().max(150).optional().or(z.literal("")),
 
-    designation: z
-      .string()
-      .trim()
-      .min(2, "Please enter your role")
-      .max(100),
+    designation: z.string().trim().max(100).optional().or(z.literal("")),
 
-    industry: z
-      .string()
-      .trim()
-      .min(1, "Please select your industry"),
+    industry: z.string().trim().optional().or(z.literal("")),
 
     industryOther: z
       .string()
@@ -368,7 +360,29 @@ const audienceASchema = z
       .or(z.literal("")),
   })
   .superRefine((data, ctx) => {
-    if (data.industry === "Other" && !data.industryOther?.trim()) {
+    const isSpouse = data.registrationType === "Spouse";
+
+    if (data.chapterName.trim().length < 2) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["chapterName"],
+        message: isSpouse ? "Please enter the spouse name" : "Please enter your chapter name, market or region",
+      });
+    }
+
+    if (!isSpouse && (data.organization?.trim().length ?? 0) < 2) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["organization"], message: "Please enter your company" });
+    }
+
+    if (!isSpouse && (data.designation?.trim().length ?? 0) < 2) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["designation"], message: "Please enter your role" });
+    }
+
+    if (!isSpouse && !data.industry?.trim()) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["industry"], message: "Please select your industry" });
+    }
+
+    if (!isSpouse && data.industry === "Other" && !data.industryOther?.trim()) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["industryOther"],
@@ -500,29 +514,22 @@ function AttendPage() {
       <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:px-10">
         {/* REGISTRATION PRICING */}
         <div className="mt-2 overflow-hidden rounded-sm border border-gold/25 bg-background/70">
-          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
-            <div className="px-5 py-6 text-center sm:px-6 sm:py-7">
-              <p className="font-serif text-xl uppercase tracking-[0.02em] text-foreground/95 sm:text-2xl">
-                Registration Fee
-              </p>
-              <p className="mt-2 font-serif text-2xl text-foreground sm:text-3xl">
-                ₹ {REGULAR_REGISTRATION_FEE.toLocaleString("en-IN")} + GST
-              </p>
-            </div>
-
-            <div
-              aria-hidden="true"
-              className="mx-5 h-px bg-border/80 sm:mx-0 sm:h-12 sm:w-px"
-            />
-
-            <div className="px-5 py-6 text-center sm:px-6 sm:py-7">
-              <p className="font-serif text-xl uppercase tracking-[0.02em] text-gold sm:text-2xl">
-                Early Access Price
-              </p>
-              <p className="mt-2 font-serif text-2xl text-gold sm:text-3xl">
-                ₹ {REGISTRATION_FEE.toLocaleString("en-IN")} + GST
-              </p>
-            </div>
+          <div className="grid grid-cols-1 gap-px bg-border/80 sm:grid-cols-2">
+            {[
+              { label: "Registration Fee", amount: 50_000, highlighted: false },
+              { label: "Early Access Price", amount: getRegistrationPricing("").baseAmount, highlighted: true },
+              { label: "Member + Spouse", amount: getRegistrationPricing("Member + Spouse").baseAmount, highlighted: true },
+              { label: "Spouse", amount: getRegistrationPricing("Spouse").baseAmount, highlighted: true },
+            ].map((tier) => (
+              <div key={tier.label} className="bg-background/95 px-4 py-6 text-center sm:px-6 sm:py-7">
+                <p className={`font-serif text-lg uppercase tracking-[0.04em] sm:text-xl ${tier.highlighted ? "text-gold" : "text-foreground"}`}>
+                  {tier.label}
+                </p>
+                <p className={`mt-2 font-serif text-2xl sm:text-3xl ${tier.highlighted ? "text-gold" : "text-foreground"}`}>
+                  {formatINR(tier.amount)} + GST
+                </p>
+              </div>
+            ))}
           </div>
 
           {/* <div className="border-t border-gold/35 px-4 py-4 sm:px-6">
@@ -678,6 +685,7 @@ function PaymentStatusCard({
 // -------------------- Audience A form --------------------
 function AudienceAForm() {
   const [data, setData] = useState<AudienceAState>(initialA);
+  const isSpouse = data.registrationType === "Spouse";
   const [citySelection, setCitySelection] = useState("");
   const [errors, setErrors] = useState<
     Partial<Record<keyof AudienceAState, string>>
@@ -694,6 +702,32 @@ function AudienceAForm() {
     v: AudienceAState[K]
   ) {
     setData((d) => ({ ...d, [k]: v }));
+  }
+
+  function updateRegistrationType(registrationType: string) {
+    setData((current) => ({
+      ...current,
+      registrationType,
+      ...(registrationType === "Spouse" ? {
+        organization: "",
+        designation: "",
+        industry: "",
+        industryOther: "",
+        sponsorshipInterest: "",
+        sponsorshipDetails: "",
+      } : {}),
+    }));
+    if (registrationType === "Spouse") {
+      setErrors((current) => ({
+        ...current,
+        organization: undefined,
+        designation: undefined,
+        industry: undefined,
+        industryOther: undefined,
+        sponsorshipInterest: undefined,
+        sponsorshipDetails: undefined,
+      }));
+    }
   }
 
   function toggleDietary(option: string) {
@@ -957,7 +991,7 @@ function AudienceAForm() {
           label="Registration Type"
           id="a-registration-type"
           value={data.registrationType}
-          onChange={(v) => update("registrationType", v)}
+          onChange={updateRegistrationType}
           options={registrationTypeOptions}
           error={errors.registrationType}
           placeholder="Select registration type"
@@ -998,7 +1032,9 @@ function AudienceAForm() {
 
         {/* 5. Chapter Name */}
         <Field
-          label="Chapter Name (National and Executive Directors, please enter your market or region)"
+          label={isSpouse
+            ? "Spouse Name"
+            : "Chapter Name (National and Executive Directors, please enter your market or region)"}
           id="a-chapter-name"
           value={data.chapterName}
           onChange={(v) => update("chapterName", v)}
@@ -1006,28 +1042,29 @@ function AudienceAForm() {
           required
         />
 
-        {/* 6. Company */}
-        <Field
-          label="Company"
-          id="a-org"
-          value={data.organization}
-          onChange={(v) => update("organization", v)}
-          error={errors.organization}
-          required
-        />
+        {!isSpouse && <>
+          {/* 6. Company */}
+          <Field
+            label="Company"
+            id="a-org"
+            value={data.organization ?? ""}
+            onChange={(v) => update("organization", v)}
+            error={errors.organization}
+            required
+          />
 
-        {/* 7. Designation */}
-        <Field
-          label="Designation (CEO, COO, CFO, as it should appear on your name badge)"
-          id="a-role"
-          value={data.designation}
-          onChange={(v) => update("designation", v)}
-          error={errors.designation}
-          required
-        />
+          {/* 7. Designation */}
+          <Field
+            label="Designation (CEO, COO, CFO, as it should appear on your name badge)"
+            id="a-role"
+            value={data.designation ?? ""}
+            onChange={(v) => update("designation", v)}
+            error={errors.designation}
+            required
+          />
 
-        {/* 8. Industry */}
-        <div>
+          {/* 8. Industry */}
+          <div>
           <p className="eyebrow max-w-full break-words leading-5 sm:leading-6">
             <RequiredMark />
             Please select your industry
@@ -1070,10 +1107,10 @@ function AudienceAForm() {
               {errors.industryOther}
             </p>
           )}
-        </div>
+          </div>
 
-        {/* 9. Sponsorship */}
-        <div>
+          {/* 9. Sponsorship */}
+          <div>
           <p className="eyebrow max-w-full break-words leading-5 sm:leading-6">
             Are you interested in sponsorship opportunities for the 2026 India
             Leadership Summit?
@@ -1106,7 +1143,8 @@ function AudienceAForm() {
             placeholder="Additional information (optional)"
             className="mt-3 min-h-12 w-full max-w-full rounded-sm border border-border bg-transparent px-4 py-3 text-base text-foreground placeholder:text-muted-foreground/60 focus:border-gold focus:outline-none sm:text-sm"
           />
-        </div>
+          </div>
+        </>}
 
         {/* 9. Dietary Restrictions */}
         <div>
@@ -1333,6 +1371,7 @@ function PaymentInvoiceModal({
   }, [open, isRedirecting, onClose]);
 
   if (!open || !applicant) return null;
+  const pricing = getRegistrationPricing(applicant.registrationType);
 
   return (
     <div
@@ -1405,25 +1444,25 @@ function PaymentInvoiceModal({
                   ILS 2026 Registration
                 </p>
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                  Member attendance application and event registration.
+                  {applicant.registrationType} attendance and event registration.
                 </p>
               </div>
               <p className="shrink-0 font-medium">
-                {formatINR(REGISTRATION_FEE)}
+                {formatINR(pricing.baseAmount)}
               </p>
             </div>
 
             <div className="space-y-3 border-t border-border/70 pt-5">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Subtotal</span>
-                <span>{formatINR(REGISTRATION_FEE)}</span>
+                <span>{formatINR(pricing.baseAmount)}</span>
               </div>
 
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">
-                  GST ({GST_RATE}%)
+                  GST ({pricing.gstRate}%)
                 </span>
-                <span>{formatINR(GST_AMOUNT)}</span>
+                <span>{formatINR(pricing.gstAmount)}</span>
               </div>
 
               <div className="gold-divider my-4" />
@@ -1438,7 +1477,7 @@ function PaymentInvoiceModal({
                   </p>
                 </div>
                 <p className="font-serif text-2xl text-gold sm:text-3xl">
-                  {formatINR(TOTAL_AMOUNT)}
+                  {formatINR(pricing.totalAmount)}
                 </p>
               </div>
             </div>
@@ -1479,7 +1518,7 @@ function PaymentInvoiceModal({
             >
               {isRedirecting
                 ? "Redirecting securely..."
-                : `Make Payment · ${formatINR(TOTAL_AMOUNT)}`}
+                : `Make Payment · ${formatINR(pricing.totalAmount)}`}
             </button>
           </div>
         </div>
