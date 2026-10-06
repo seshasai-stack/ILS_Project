@@ -99,7 +99,9 @@ function getRegistrationPricing(registrationType: string) {
     ? 49_500
     : registrationType === "Spouse"
       ? 10_000
-      : 39_500;
+      : registrationType === "Guest / Non-member" || registrationType === "Guest/Non-member"
+        ? 40_000
+        : 39_500;
   const gstAmount = (baseAmount * GST_RATE) / 100;
   return { baseAmount, gstRate: GST_RATE, gstAmount, totalAmount: baseAmount + gstAmount };
 }
@@ -132,7 +134,7 @@ const registrationTypeOptions = [
   "Member + Spouse",
   "Executive Director",
   "Spouse",
-  "Guest/Non-member",
+  "Guest / Non-member",
 ];
 
 const industryOptions = [
@@ -516,10 +518,11 @@ function AttendPage() {
         <div className="mt-2 overflow-hidden rounded-sm border border-gold/25 bg-background/70">
           <div className="grid grid-cols-1 gap-px bg-border/80 sm:grid-cols-2">
             {[
-              { label: "Registration Fee", amount: 50_000, highlighted: false },
+              // { label: "Registration Fee", amount: 50_000, highlighted: false },
               { label: "Early Access Price", amount: getRegistrationPricing("").baseAmount, highlighted: true },
               { label: "Member + Spouse", amount: getRegistrationPricing("Member + Spouse").baseAmount, highlighted: true },
               { label: "Spouse", amount: getRegistrationPricing("Spouse").baseAmount, highlighted: true },
+              { label: "Guest / Non-member", amount: getRegistrationPricing("Guest / Non-member").baseAmount, highlighted: true },
             ].map((tier) => (
               <div key={tier.label} className="bg-background/95 px-4 py-6 text-center sm:px-6 sm:py-7">
                 <p className={`font-serif text-lg uppercase tracking-[0.04em] sm:text-xl ${tier.highlighted ? "text-gold" : "text-foreground"}`}>
