@@ -70,8 +70,8 @@ const agenda = [
       },
       {
         time: "4:00 – 5:00 PM",
-        title: "121s",
-        who: "Curated One-to-One Conversations",
+        title: "Breakout Sessions",
+        who: "Curated Topics for smaller rooms",
       },
       {
         time: "5:00 – 7:00 PM",

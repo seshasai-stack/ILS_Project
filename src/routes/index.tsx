@@ -1,14 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
+  ArrowUpRight,
   CalendarDays,
   Check,
   HeartHandshake,
+  Mic2,
   UserRound,
   UsersRound,
   X,
 } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import heroBg from "@/assets/hero-bg.jpg";
+import harshaBhogleSpeaker from "@/assets/harsha-bhogle-day-1-speaker.jpeg";
 import hesaLogo from "@/assets/hesa-logo.jpeg";
 import ilsMainLogo from "@/assets/ils-main-logo-v2.png";
 import ilsVideo from "@/assets/ILS-NEW-V2.mp4";
@@ -55,8 +58,8 @@ const agenda = [
       },
       {
         time: "4:00 – 5:00 PM",
-        title: "121s",
-        who: "Curated One-to-One Conversations",
+        title: "Breakout Sessions",
+        who: "Curated Topics for smaller rooms",
       },
       {
         time: "5:00 – 7:00 PM",
@@ -124,6 +127,19 @@ const registrationTiers = [
     access: "Gala Night",
   },
 ] as const;
+
+const speakerBurstParticles = Array.from({ length: 56 }, (_, index) => {
+  const angle = (((index * 137.508) % 360) * Math.PI) / 180;
+  const distance = 90 + ((index * 47) % 440);
+
+  return {
+    x: Math.cos(angle) * distance,
+    y: Math.sin(angle) * distance,
+    size: 2 + ((index * 5) % 6),
+    delay: (index % 9) * 0.035,
+    rotation: (index * 71) % 360,
+  };
+});
 
 const registrationAccess = [
   {
@@ -623,6 +639,174 @@ function SummitVideo() {
   );
 }
 
+function DayOneSpeakerReveal() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [isActive, setIsActive] = useState(false);
+  const [hasRevealed, setHasRevealed] = useState(false);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsActive(entry.isIntersecting);
+
+        if (entry.isIntersecting) {
+          setHasRevealed(true);
+        }
+      },
+      {
+        rootMargin: "-12% 0px -12%",
+        threshold: 0.16,
+      },
+    );
+
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <section
+      ref={sectionRef}
+      className="speaker-reveal-section relative isolate overflow-hidden border-b border-border/40 bg-background py-20 sm:py-24 lg:py-32"
+      aria-labelledby="day-one-speaker-title"
+    >
+      <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_50%_36%,rgba(202,157,69,0.14),transparent_42%)]" />
+      <div className="absolute inset-x-0 top-0 -z-20 h-px bg-gradient-to-r from-transparent via-gold/55 to-transparent" />
+
+      {isActive && (
+        <>
+          <GoldParticles count={28} />
+          <div
+            className="pointer-events-none absolute inset-0 z-10 overflow-hidden"
+            aria-hidden
+          >
+            <span className="speaker-shockwave speaker-shockwave-one" />
+            <span className="speaker-shockwave speaker-shockwave-two" />
+
+            {speakerBurstParticles.map((particle, index) => (
+              <span
+                key={index}
+                className="speaker-burst-particle"
+                style={
+                  {
+                    "--speaker-particle-x": `${particle.x}px`,
+                    "--speaker-particle-y": `${particle.y}px`,
+                    "--speaker-particle-size": `${particle.size}px`,
+                    "--speaker-particle-delay": `${particle.delay}s`,
+                    "--speaker-particle-rotation": `${particle.rotation}deg`,
+                  } as CSSProperties
+                }
+              />
+            ))}
+          </div>
+        </>
+      )}
+
+      <div className="relative z-20 mx-auto max-w-6xl px-5 sm:px-6 lg:px-10">
+        <div
+          className={`mx-auto max-w-3xl text-center transition-all duration-1000 ease-out motion-reduce:transform-none motion-reduce:opacity-100 ${
+            hasRevealed
+              ? "translate-y-0 opacity-100"
+              : "translate-y-8 opacity-0"
+          }`}
+        >
+          <div className="inline-flex items-center gap-3 text-gold">
+            <span className="h-px w-10 bg-gold/60" />
+            <Mic2 className="h-4 w-4" aria-hidden="true" />
+            <span className="h-px w-10 bg-gold/60" />
+          </div>
+          <p className="eyebrow mt-5">Main keynote reveal</p>
+          <h2
+            id="day-one-speaker-title"
+            className="mt-4 font-serif text-4xl uppercase tracking-[0.04em] text-foreground sm:text-5xl md:text-6xl"
+          >
+            Day-1 <span className="gold-gradient-text italic">Sparker</span>
+          </h2>
+        </div>
+
+        <div
+          className={`speaker-artwork-shell relative mx-auto mt-12 max-w-5xl transition-all delay-150 duration-[1200ms] ease-out motion-reduce:transform-none motion-reduce:opacity-100 sm:mt-16 ${
+            hasRevealed ? "scale-100 opacity-100" : "scale-[0.96] opacity-0"
+          }`}
+        >
+          <div className="absolute -inset-px bg-gradient-to-br from-gold/65 via-gold/10 to-gold/45" />
+          <div className="relative m-px overflow-hidden bg-black">
+            <img
+              src={harshaBhogleSpeaker}
+              alt="Harsha Bhogle, Day 1 keynote speaker for India Leadership Summit 2026"
+              className="block h-auto w-full object-cover"
+            />
+            <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/5" />
+          </div>
+        </div>
+
+        <div
+          className={`mx-auto mt-12 max-w-4xl transition-all delay-300 duration-1000 ease-out motion-reduce:transform-none motion-reduce:opacity-100 sm:mt-16 ${
+            hasRevealed
+              ? "translate-y-0 opacity-100"
+              : "translate-y-10 opacity-0"
+          }`}
+        >
+          <div className="border-l border-gold/55 pl-5 sm:pl-8">
+            <p className="font-serif text-2xl leading-relaxed text-foreground sm:text-3xl">
+              For four decades, he has watched teams from the closest seat in
+              the house.
+            </p>
+            <p className="mt-5 text-base leading-8 text-muted-foreground sm:text-lg">
+              How they come together. How they fracture. How the great ones find
+              a way when it matters most.
+            </p>
+          </div>
+
+          <div className="mt-10 bg-ink/70 px-5 py-8 ring-1 ring-inset ring-gold/20 sm:px-8 sm:py-10">
+            <p className="text-xs uppercase tracking-[0.24em] text-gold">
+              Ladies and Gentlemen
+            </p>
+            <p className="mt-4 font-serif text-2xl leading-snug text-foreground sm:text-3xl">
+              Our Main Keynote Speaker for Day 1 is the man himself — Harsha
+              Bhogle.
+            </p>
+            <p className="mt-3 text-sm uppercase tracking-[0.18em] text-muted-foreground">
+              Indian Cricket Commentator and Journalist
+            </p>
+          </div>
+
+          <div className="mt-8 grid gap-3 sm:grid-cols-2">
+            <a
+              href="https://www.instagram.com/reel/DdjIN_0T_9G/?stkn=anlna3YwOGw4bG85"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex min-h-16 items-center justify-between border border-gold/35 bg-gold/[0.04] px-5 py-4 text-xs uppercase tracking-[0.16em] text-gold transition-all duration-300 hover:border-gold hover:bg-gold/[0.09] sm:text-sm"
+            >
+              A snippet into Harsha&rsquo;s world of speaking
+              <ArrowUpRight
+                className="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1"
+                aria-hidden="true"
+              />
+            </a>
+            <a
+              href="https://www.harshabhogle.com/biograph"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex min-h-16 items-center justify-between border border-border bg-surface/35 px-5 py-4 text-xs uppercase tracking-[0.16em] text-foreground transition-all duration-300 hover:border-gold/70 hover:text-gold sm:text-sm"
+            >
+              Profile of Harsha
+              <ArrowUpRight
+                className="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1"
+                aria-hidden="true"
+              />
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function RegistrationInformationSection() {
   return (
     <section className="border-t border-border/40 bg-ink/35 py-20 sm:py-24 lg:py-28">
@@ -703,9 +887,9 @@ function RegistrationInformationSection() {
           ))}
         </div>
 
-        <p className="mt-5 text-right text-xs text-muted-foreground">
+        {/* <p className="mt-5 text-right text-xs text-muted-foreground">
           GST is charged at 18% on all applicable registration fees.
-        </p>
+        </p> */}
       </div>
     </section>
   );
@@ -822,6 +1006,9 @@ function Home() {
           <div className="mx-auto mt-8 h-px w-24 bg-gold/50" />
         </div>
       </section>
+
+      {/* DAY 1 KEYNOTE SPEAKER REVEAL */}
+      <DayOneSpeakerReveal />
 
       {/* SUMMIT VIDEO — autoplay on scroll, muted initially, responsive */}
       <SummitVideo />
