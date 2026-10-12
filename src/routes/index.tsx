@@ -1,4 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+  CalendarDays,
+  Check,
+  HeartHandshake,
+  UserRound,
+  UsersRound,
+  X,
+} from "lucide-react";
 import { useEffect, useRef } from "react";
 import heroBg from "@/assets/hero-bg.jpg";
 import hesaLogo from "@/assets/hesa-logo.jpeg";
@@ -89,6 +97,97 @@ const agenda = [
     ],
   },
 ];
+
+const registrationTiers = [
+  {
+    category: "Member / Chapter Director / Executive Director",
+    early: "₹39,500 + GST",
+    general: "₹50,000 + GST",
+    access: "Day 1, Day 2 & Gala Night",
+  },
+  {
+    category: "Member + Spouse",
+    early: "₹49,500 + GST",
+    general: "₹60,000 + GST",
+    access: "Member: Day 1, Day 2 & Gala Night · Spouse: Gala Night",
+  },
+  {
+    category: "Guest / Non-member",
+    early: "N/A",
+    general: "₹40,000 + GST",
+    access: "Day 1 & Day 2 · Gala Night not included",
+  },
+  {
+    category: "Spouse",
+    early: "N/A",
+    general: "₹10,000 + GST",
+    access: "Gala Night",
+  },
+] as const;
+
+const registrationAccess = [
+  {
+    title: "Executive Director / Chapter Director / Member",
+    shortTitle: "Member Access",
+    icon: UsersRound,
+    items: [
+      {
+        event: "Day 1 · India Leadership Summit",
+        date: "November 13",
+        included: true,
+      },
+      {
+        event: "Day 2 · India Leadership Summit",
+        date: "November 14",
+        included: true,
+      },
+      {
+        event: "Gala Night",
+        date: "November 14",
+        included: true,
+      },
+    ],
+    note: "Complete access to both summit days and the Gala Night.",
+  },
+  {
+    title: "Non-Member",
+    shortTitle: "Guest Access",
+    icon: UserRound,
+    items: [
+      {
+        event: "Day 1 · India Leadership Summit",
+        date: "November 13",
+        included: true,
+      },
+      {
+        event: "Day 2 · India Leadership Summit",
+        date: "November 14",
+        included: true,
+      },
+      {
+        event: "Gala Night",
+        date: "Not included",
+        included: false,
+      },
+    ],
+    note:
+      "The Gala Night is a member-driven evening and is not included in Non-Member registration.",
+  },
+  {
+    title: "Spouses",
+    shortTitle: "Gala Access",
+    icon: HeartHandshake,
+    items: [
+      {
+        event: "Gala Night",
+        date: "November 14",
+        included: true,
+      },
+    ],
+    note:
+      "Spouses are invited exclusively to the Gala Night and do not have access to summit sessions.",
+  },
+] as const;
 
 function clamp(value: number, min = 0, max = 1) {
   return Math.min(Math.max(value, min), max);
@@ -524,6 +623,189 @@ function SummitVideo() {
   );
 }
 
+function RegistrationInformationSection() {
+  return (
+    <section className="border-t border-border/40 bg-ink/35 py-20 sm:py-24 lg:py-28">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="eyebrow">Plan your registration</p>
+          <h2 className="mt-4 font-serif text-4xl uppercase leading-tight text-gold sm:text-5xl">
+            Registration Information
+          </h2>
+          <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
+            Select the category that matches your participation and review the
+            corresponding summit access.
+          </p>
+        </div>
+
+        <div className="mt-12 hidden overflow-hidden border border-gold/30 bg-background/75 lg:block">
+          <div className="grid grid-cols-[1.35fr_0.8fr_0.8fr_1.25fr] bg-surface/90 text-xs font-semibold uppercase tracking-[0.16em] text-foreground">
+            <div className="border-r border-border px-7 py-6">Category</div>
+            <div className="border-r border-border px-7 py-6">Early Access (INR)</div>
+            <div className="border-r border-border px-7 py-6">General (INR)</div>
+            <div className="px-7 py-6">Access to</div>
+          </div>
+
+          {registrationTiers.map((tier) => (
+            <div
+              key={tier.category}
+              className="grid grid-cols-[1.35fr_0.8fr_0.8fr_1.25fr] border-t border-border/70 text-sm"
+            >
+              <div className="border-r border-border px-7 py-7 font-medium text-foreground">
+                {tier.category}
+              </div>
+              <div className="border-r border-border px-7 py-7 text-gold">
+                {tier.early}
+              </div>
+              <div className="border-r border-border px-7 py-7 text-gold">
+                {tier.general}
+              </div>
+              <div className="px-7 py-7 leading-6 text-muted-foreground">
+                {tier.access}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:hidden">
+          {registrationTiers.map((tier) => (
+            <article
+              key={tier.category}
+              className="overflow-hidden border border-border/70 bg-background/80"
+            >
+              <div className="border-b border-border/60 bg-surface/70 px-5 py-5">
+                <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-gold">
+                  Registration category
+                </p>
+                <h3 className="mt-2 font-serif text-xl leading-7">{tier.category}</h3>
+              </div>
+              <dl className="grid grid-cols-2 gap-px bg-border/60">
+                <div className="bg-background p-5">
+                  <dt className="text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
+                    Early Access
+                  </dt>
+                  <dd className="mt-2 text-sm font-medium text-gold">{tier.early}</dd>
+                </div>
+                <div className="bg-background p-5">
+                  <dt className="text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
+                    General
+                  </dt>
+                  <dd className="mt-2 text-sm font-medium text-gold">{tier.general}</dd>
+                </div>
+              </dl>
+              <div className="border-t border-border/60 px-5 py-5">
+                <p className="text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
+                  Access to
+                </p>
+                <p className="mt-2 text-sm leading-6 text-foreground/85">{tier.access}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <p className="mt-5 text-right text-xs text-muted-foreground">
+          GST is charged at 18% on all applicable registration fees.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function RegistrationAccessSection() {
+  return (
+    <section className="relative overflow-hidden border-t border-border/40 py-20 sm:py-24 lg:py-28">
+      <div className="pointer-events-none absolute -right-40 top-0 h-96 w-96 rounded-full bg-gold/[0.06] blur-3xl" />
+
+      <div className="relative mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
+        <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+          <div>
+            <p className="eyebrow">Know what your registration includes</p>
+            <h2 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">
+              ILS 2026 — <span className="gold-gradient-text italic">Registration Access</span>
+            </h2>
+          </div>
+          <p className="max-w-xl text-sm leading-7 text-muted-foreground sm:text-base lg:justify-self-end">
+            Summit and Gala access varies by registration category. Review the
+            inclusions below before completing your registration.
+          </p>
+        </div>
+
+        <div className="mt-14 grid gap-5 lg:grid-cols-3">
+          {registrationAccess.map((access, cardIndex) => {
+            const Icon = access.icon;
+
+            return (
+              <article
+                key={access.title}
+                className="group flex h-full flex-col overflow-hidden border border-border/70 bg-background/80 transition-all duration-500 hover:-translate-y-1 hover:border-gold/45 hover:shadow-[0_24px_70px_-35px_rgba(196,161,90,0.45)]"
+              >
+                <header className="border-b border-border/60 bg-surface/55 p-6 sm:p-7">
+                  <div className="flex items-start justify-between gap-4">
+                    <span className="flex h-12 w-12 items-center justify-center border border-gold/35 bg-gold/[0.06] text-gold">
+                      <Icon aria-hidden="true" className="h-5 w-5" />
+                    </span>
+                    <span className="text-[9px] font-semibold uppercase tracking-[0.22em] text-gold/75">
+                      0{cardIndex + 1}
+                    </span>
+                  </div>
+                  <p className="mt-6 text-[9px] font-semibold uppercase tracking-[0.2em] text-gold">
+                    {access.shortTitle}
+                  </p>
+                  <h3 className="mt-2 font-serif text-2xl leading-8">{access.title}</h3>
+                </header>
+
+                <div className="flex flex-1 flex-col p-6 sm:p-7">
+                  <ul className="space-y-3">
+                    {access.items.map((item) => (
+                      <li
+                        key={item.event}
+                        className="flex items-start gap-4 border-b border-border/50 pb-4 last:border-b-0 last:pb-0"
+                      >
+                        <span
+                          className={
+                            "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border " +
+                            (item.included
+                              ? "border-gold/45 bg-gold/[0.08] text-gold"
+                              : "border-destructive/40 bg-destructive/5 text-destructive")
+                          }
+                        >
+                          {item.included ? (
+                            <Check aria-hidden="true" className="h-3.5 w-3.5" />
+                          ) : (
+                            <X aria-hidden="true" className="h-3.5 w-3.5" />
+                          )}
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-sm font-medium leading-6 text-foreground">
+                            {item.event}
+                          </span>
+                          <span
+                            className={
+                              "mt-1 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] " +
+                              (item.included ? "text-muted-foreground" : "text-destructive")
+                            }
+                          >
+                            <CalendarDays aria-hidden="true" className="h-3 w-3" />
+                            {item.date}
+                          </span>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <p className="mt-7 border-l border-gold/45 pl-4 text-xs leading-6 text-muted-foreground">
+                    {access.note}
+                  </p>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Home() {
   return (
     <>
@@ -647,6 +929,10 @@ function Home() {
           </div>
         </div>
       </section>
+
+      {/* REGISTRATION PRICING AND ACCESS */}
+      <RegistrationInformationSection />
+      <RegistrationAccessSection />
 
       {/* CTA STRIP */}
       <section className="relative overflow-hidden border-t border-border/40 bg-ink py-20 sm:py-24">
