@@ -38,7 +38,7 @@ const policySections = [
   },
   {
     number: "04",
-    title: "Cancellations on or Before 30 September 2026",
+    title: "Cancellations on or Before 30th September 2026",
     content: [
       "Participants who cancel their registration on or before 30 September 2026 shall be eligible for a refund equal to 75% of the total registration fee.",
       "The refund will be applicable only where the registration has been fully paid and officially confirmed by the Company.",
@@ -49,19 +49,19 @@ const policySections = [
   {
     number: "05",
     title:
-      "Cancellations Between 1 October 2026 and 14 October 2026",
+      "Cancellations Between 1st October 2026 and 31st October 2026",
     content: [
-      "Participants whose written cancellation requests are received between 1 October 2026 and 14 October 2026, both dates inclusive, shall be eligible for a refund equal to 50% of the total registration fee.",
+      "Participants whose written cancellation requests are received between 1 October 2026 and 31 October 2026, both dates inclusive, shall be eligible for a refund equal to 50% of the total registration fee.",
       "The remaining 50% shall be retained by ASCENT SPHERE LLP to cover venue reservations, catering commitments, event production expenses, delegate materials, hospitality arrangements and other operational costs already committed by the Company.",
       "The refund will be calculated on the total registration fee received for the confirmed participant registration.",
-      "No request submitted after 14 October 2026 will qualify for the 50% refund provided under this section.",
+      "No request submitted after 31 October 2026 will qualify for the 50% refund provided under this section.",
     ],
   },
   {
     number: "06",
-    title: "Cancellations on or After 15 October 2026",
+    title: "Cancellations on or After 1st November 2026",
     content: [
-      "No refunds shall be issued for cancellation requests received on or after 15 October 2026.",
+      "No refunds shall be issued for cancellation requests received on or after 1 November 2026.",
       "From this date, all registrations shall be treated as final and non-refundable.",
       "By this stage, ASCENT SPHERE LLP may have entered into binding contractual commitments with venues, hotels, vendors, hospitality partners, production agencies, catering providers and other service providers.",
       "The registration fee will therefore be retained to cover event-related costs, contractual commitments and operational expenses already incurred or committed by the Company.",
@@ -312,7 +312,7 @@ function ReturnPolicyPage() {
               </p>
 
               <h3 className="mt-4 text-2xl text-foreground">
-                30 September 2026
+                30th September 2026
               </h3>
 
               <p className="mt-6 font-serif text-5xl text-gold">
@@ -332,7 +332,7 @@ function ReturnPolicyPage() {
               </p>
 
               <h3 className="mt-4 text-2xl text-foreground">
-                1–14 October 2026
+                1–31st October 2026
               </h3>
 
               <p className="mt-6 font-serif text-5xl text-gold">
@@ -352,7 +352,7 @@ function ReturnPolicyPage() {
               </p>
 
               <h3 className="mt-4 text-2xl text-foreground">
-                15 October 2026
+                1st November 2026
               </h3>
 
               <p className="mt-6 font-serif text-5xl text-gold">
