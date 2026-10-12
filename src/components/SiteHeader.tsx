@@ -11,7 +11,7 @@ const nav: readonly NavItem[] = [
   { to: "/", label: "Home" },
   { to: "/summit", label: "Agenda" },
   { to: "/sponsorship", label: "Sponsorship" },
-  { to: "/about", label: "About" },
+  { to: "/about", label: "FAQ" },
 ];
 
 export function SiteHeader() {
