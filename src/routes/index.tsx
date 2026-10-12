@@ -610,7 +610,7 @@ function Home() {
                 {/* TIMELINE */}
                 <div className="relative">
                   {/* VERTICAL GOLD LINE */}
-                  <div className="absolute bottom-2 left-[180px] top-2 hidden w-px bg-gradient-to-b from-gold/60 via-gold/30 to-transparent md:block" />
+                  <div className="absolute bottom-2 left-[224px] top-2 hidden w-px -translate-x-1/2 bg-gradient-to-b from-gold/60 via-gold/30 to-transparent md:block" />
 
                   <ul className="space-y-9 sm:space-y-10">
                     {agendaDay.sessions.map((session) => (
