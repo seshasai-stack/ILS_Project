@@ -8,10 +8,10 @@ type NavItem = {
 };
 
 const nav: readonly NavItem[] = [
-  // { to: "/", label: "Home" },
-  // { to: "/summit", label: "The Summit" },
-  // { to: "/partners", label: "Partners" },
-  // { to: "/about", label: "About" },
+  { to: "/", label: "Home" },
+  { to: "/summit", label: "Agenda" },
+  { to: "/partners", label: "Partners" },
+  { to: "/about", label: "About" },
 ];
 
 export function SiteHeader() {

@@ -264,6 +264,12 @@ const audienceASchema = z
       .min(6, "Please enter a valid phone")
       .max(30),
 
+    spouseName: z.string().trim().max(100).optional().or(z.literal("")),
+
+    spousePhone: z.string().trim().max(30).optional().or(z.literal("")),
+
+    spouseEmail: z.string().trim().max(255).optional().or(z.literal("")),
+
     chapterName: z
       .string()
       .trim()
@@ -363,8 +369,48 @@ const audienceASchema = z
   })
   .superRefine((data, ctx) => {
     const isSpouse = data.registrationType === "Spouse";
+    const isMemberWithSpouse = data.registrationType === "Member + Spouse";
+    const isGuest =
+      data.registrationType === "Guest / Non-member" ||
+      data.registrationType === "Guest/Non-member";
 
-    if (data.chapterName.trim().length < 2) {
+    if (isMemberWithSpouse && (data.spouseName?.trim().length ?? 0) < 2) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["spouseName"],
+        message: "Please enter the spouse's name",
+      });
+    }
+
+    if (isMemberWithSpouse && (data.spousePhone?.trim().length ?? 0) < 6) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["spousePhone"],
+        message: "Please enter a valid spouse phone number",
+      });
+    } else if (
+      isMemberWithSpouse &&
+      !/^[0-9+\-\s()]+$/.test(data.spousePhone?.trim() ?? "")
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["spousePhone"],
+        message: "Spouse phone number contains invalid characters",
+      });
+    }
+
+    if (
+      isMemberWithSpouse &&
+      !z.string().email().safeParse(data.spouseEmail?.trim() ?? "").success
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["spouseEmail"],
+        message: "Please enter a valid spouse email",
+      });
+    }
+
+    if (!isGuest && data.chapterName.trim().length < 2) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["chapterName"],
@@ -411,6 +457,9 @@ const initialA: AudienceAState = {
   name: "",
   email: "",
   phone: "",
+  spouseName: "",
+  spousePhone: "",
+  spouseEmail: "",
   chapterName: "",
   organization: "",
   designation: "",
@@ -515,31 +564,66 @@ function AttendPage() {
     <section className="py-16 sm:py-20 md:py-32">
       <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:px-10">
         {/* REGISTRATION PRICING */}
-        <div className="mt-2 overflow-hidden rounded-sm border border-gold/25 bg-background/70">
-          <div className="grid grid-cols-1 gap-px bg-border/80 sm:grid-cols-2">
-            {[
-              // { label: "Registration Fee", amount: 50_000, highlighted: false },
-              { label: "Early Access Price", amount: getRegistrationPricing("").baseAmount, highlighted: true },
-              { label: "Member + Spouse", amount: getRegistrationPricing("Member + Spouse").baseAmount, highlighted: true },
-              { label: "Spouse", amount: getRegistrationPricing("Spouse").baseAmount, highlighted: true },
-              { label: "Guest / Non-member", amount: getRegistrationPricing("Guest / Non-member").baseAmount, highlighted: true },
-            ].map((tier) => (
-              <div key={tier.label} className="bg-background/95 px-4 py-6 text-center sm:px-6 sm:py-7">
-                <p className={`font-serif text-lg uppercase tracking-[0.04em] sm:text-xl ${tier.highlighted ? "text-gold" : "text-foreground"}`}>
-                  {tier.label}
-                </p>
-                <p className={`mt-2 font-serif text-2xl sm:text-3xl ${tier.highlighted ? "text-gold" : "text-foreground"}`}>
-                  {formatINR(tier.amount)} + GST
-                </p>
-              </div>
-            ))}
+        <div className="relative left-1/2 mt-2 w-[calc(100vw-2rem)] max-w-6xl -translate-x-1/2 sm:w-[calc(100vw-3rem)] lg:w-[calc(100vw-5rem)]">
+          <h2 className="text-center font-serif text-2xl uppercase tracking-[0.08em] text-gold sm:text-3xl">
+            Registration Information
+          </h2>
+
+          <div className="mt-7 overflow-hidden rounded-sm border border-gold/35 bg-background/70">
+            <table className="w-full table-fixed border-collapse text-left">
+              <thead>
+                <tr className="bg-secondary/90 text-[10px] uppercase tracking-[0.08em] text-foreground sm:text-xs sm:tracking-[0.12em] lg:text-sm">
+                  <th className="w-[30%] border-r border-border px-2 py-4 font-semibold sm:px-4 sm:py-5 lg:px-6">Category</th>
+                  <th className="w-[19%] border-r border-border px-2 py-4 font-semibold sm:px-4 sm:py-5 lg:px-6">Early Access (INR)</th>
+                  <th className="w-[19%] border-r border-border px-2 py-4 font-semibold sm:px-4 sm:py-5 lg:px-6">General (INR)</th>
+                  <th className="w-[32%] px-2 py-4 font-semibold sm:px-4 sm:py-5 lg:px-6">Access to</th>
+                </tr>
+              </thead>
+              <tbody className="text-[11px] text-foreground/85 sm:text-sm">
+                {[
+                  {
+                    category: "Member / Chapter Director / Executive Director",
+                    early: getRegistrationPricing("").baseAmount,
+                    general: 50_000,
+                    access: "Day 1, Day 2 & Gala Night",
+                  },
+                  {
+                    category: "Member + Spouse",
+                    early: getRegistrationPricing("Member + Spouse").baseAmount,
+                    general: 60_000,
+                    access: "Member: Day 1, Day 2 & Gala Night · Spouse: Gala Night",
+                  },
+                  {
+                    category: "Guest / Non-member",
+                    early: null,
+                    general: getRegistrationPricing("Guest / Non-member").baseAmount,
+                    access: "Day 1 & Day 2 · Gala Night not included",
+                  },
+                  {
+                    category: "Spouse",
+                    early: null,
+                    general: getRegistrationPricing("Spouse").baseAmount,
+                    access: "Gala Night",
+                  },
+                ].map((tier) => (
+                  <tr key={tier.category} className="border-t border-border/90 bg-background/90">
+                    <td className="break-words border-r border-border px-2 py-4 font-medium text-foreground sm:px-4 sm:py-5 lg:px-6">{tier.category}</td>
+                    <td className="break-words border-r border-border px-2 py-4 text-gold sm:px-4 sm:py-5 lg:px-6">
+                      {tier.early === null ? "N/A" : `${formatINR(tier.early)} + GST`}
+                    </td>
+                    <td className="break-words border-r border-border px-2 py-4 text-gold sm:px-4 sm:py-5 lg:px-6">
+                      {formatINR(tier.general)} + GST
+                    </td>
+                    <td className="break-words px-2 py-4 leading-5 text-muted-foreground sm:px-4 sm:py-5 sm:leading-6 lg:px-6">{tier.access}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
 
-          {/* <div className="border-t border-gold/35 px-4 py-4 sm:px-6">
-            <div className="flex min-h-14 items-center justify-center border border-gold/55 px-4 py-3 text-center font-serif text-lg uppercase tracking-[0.03em] text-foreground sm:text-xl">
-              Registration
-            </div>
-          </div> */}
+          {/* <p className="mt-3 text-right text-xs text-muted-foreground">
+            GST is charged at 18% on all applicable registration fees.
+          </p> */}
         </div>
         {/* <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground">
           Attendance is by application. Choose the pathway that fits you best — we route each
@@ -689,6 +773,8 @@ function PaymentStatusCard({
 function AudienceAForm() {
   const [data, setData] = useState<AudienceAState>(initialA);
   const isSpouse = data.registrationType === "Spouse";
+  const isMemberWithSpouse = data.registrationType === "Member + Spouse";
+  const isGuest = data.registrationType === "Guest / Non-member";
   const [citySelection, setCitySelection] = useState("");
   const [errors, setErrors] = useState<
     Partial<Record<keyof AudienceAState, string>>
@@ -711,6 +797,14 @@ function AudienceAForm() {
     setData((current) => ({
       ...current,
       registrationType,
+      ...(registrationType === "Guest / Non-member" || registrationType === "Guest/Non-member" ? {
+        chapterName: "",
+      } : {}),
+      ...(registrationType !== "Member + Spouse" ? {
+        spouseName: "",
+        spousePhone: "",
+        spouseEmail: "",
+      } : {}),
       ...(registrationType === "Spouse" ? {
         organization: "",
         designation: "",
@@ -730,6 +824,17 @@ function AudienceAForm() {
         sponsorshipInterest: undefined,
         sponsorshipDetails: undefined,
       }));
+    }
+    if (registrationType !== "Member + Spouse") {
+      setErrors((current) => ({
+        ...current,
+        spouseName: undefined,
+        spousePhone: undefined,
+        spouseEmail: undefined,
+      }));
+    }
+    if (registrationType === "Guest / Non-member" || registrationType === "Guest/Non-member") {
+      setErrors((current) => ({ ...current, chapterName: undefined }));
     }
   }
 
@@ -1033,17 +1138,54 @@ function AudienceAForm() {
           required
         />
 
+        {isMemberWithSpouse && (
+          <>
+            <Field
+              label="Spouse's Name"
+              id="a-spouse-name"
+              value={data.spouseName ?? ""}
+              onChange={(v) => update("spouseName", v)}
+              error={errors.spouseName}
+              required
+            />
+
+            <div className="grid gap-6 md:grid-cols-2">
+              <Field
+                label="Spouse Phone Number"
+                id="a-spouse-phone"
+                type="tel"
+                value={data.spousePhone ?? ""}
+                onChange={(v) => update("spousePhone", v)}
+                error={errors.spousePhone}
+                required
+              />
+
+              <Field
+                label="Spouse Email"
+                id="a-spouse-email"
+                type="email"
+                value={data.spouseEmail ?? ""}
+                onChange={(v) => update("spouseEmail", v)}
+                error={errors.spouseEmail}
+                required
+              />
+            </div>
+          </>
+        )}
+
         {/* 5. Chapter Name */}
-        <Field
-          label={isSpouse
-            ? "Spouse Name"
-            : "Chapter Name (National and Executive Directors, please enter your market or region)"}
-          id="a-chapter-name"
-          value={data.chapterName}
-          onChange={(v) => update("chapterName", v)}
-          error={errors.chapterName}
-          required
-        />
+        {!isGuest && (
+          <Field
+            label={isSpouse
+              ? "Spouse Name"
+              : "Chapter Name (National and Executive Directors, please enter your market or region)"}
+            id="a-chapter-name"
+            value={data.chapterName}
+            onChange={(v) => update("chapterName", v)}
+            error={errors.chapterName}
+            required
+          />
+        )}
 
         {!isSpouse && <>
           {/* 6. Company */}
@@ -1430,6 +1572,21 @@ function PaymentInvoiceModal({
               </div>
             </div>
           </div>
+
+          {applicant.registrationType === "Member + Spouse" && (
+            <div className="rounded-sm border border-gold/25 bg-gold/5 p-4 sm:p-5">
+              <p className="text-[10px] uppercase tracking-[0.24em] text-gold">
+                Spouse details
+              </p>
+              <p className="mt-2 font-serif text-xl">{applicant.spouseName}</p>
+              <p className="mt-1 break-all text-sm text-muted-foreground">
+                {applicant.spouseEmail}
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {applicant.spousePhone}
+              </p>
+            </div>
+          )}
 
           <div>
             <div className="flex items-center justify-between border-b border-border/70 pb-3">

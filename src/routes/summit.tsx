@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import venue from "@/assets/venue.jpg";
 
 export const Route = createFileRoute("/summit")({
@@ -112,11 +113,140 @@ const agenda = [
   },
 ];
 
+type AgendaDay = (typeof agenda)[number];
+
+function AgendaTabs() {
+  const [activeDayIndex, setActiveDayIndex] = useState(0);
+  const activeDay: AgendaDay = agenda[activeDayIndex];
+  const panelId = "summit-agenda-panel";
+
+  function selectDayFromKeyboard(index: number) {
+    setActiveDayIndex(index);
+    window.requestAnimationFrame(() => {
+      document.getElementById(`agenda-tab-${index + 1}`)?.focus();
+    });
+  }
+
+  return (
+    <div>
+      <div
+        role="tablist"
+        aria-label="Summit agenda days"
+        className="grid grid-cols-2 gap-3 rounded-sm bg-secondary/20 p-2 sm:gap-4 sm:p-3"
+      >
+        {agenda.map((agendaDay, index) => {
+          const isActive = activeDayIndex === index;
+          const tabId = `agenda-tab-${index + 1}`;
+
+          return (
+            <button
+              key={agendaDay.date}
+              id={tabId}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              aria-controls={panelId}
+              tabIndex={isActive ? 0 : -1}
+              onClick={() => setActiveDayIndex(index)}
+              onKeyDown={(event) => {
+                if (event.key === "ArrowRight") {
+                  event.preventDefault();
+                  selectDayFromKeyboard((index + 1) % agenda.length);
+                } else if (event.key === "ArrowLeft") {
+                  event.preventDefault();
+                  selectDayFromKeyboard((index - 1 + agenda.length) % agenda.length);
+                } else if (event.key === "Home") {
+                  event.preventDefault();
+                  selectDayFromKeyboard(0);
+                } else if (event.key === "End") {
+                  event.preventDefault();
+                  selectDayFromKeyboard(agenda.length - 1);
+                }
+              }}
+              className={`relative min-h-32 overflow-hidden rounded-sm border px-4 py-5 text-center outline-none transition-all duration-500 ease-out focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:min-h-36 sm:px-7 sm:py-6 ${
+                isActive
+                  ? "scale-[1.01] border-gold bg-gold text-background shadow-[0_18px_55px_rgba(196,161,90,0.18)]"
+                  : "border-border/80 bg-background/80 text-foreground hover:-translate-y-0.5 hover:border-gold/60 hover:bg-gold/[0.045]"
+              }`}
+            >
+              <span className={`block text-xs font-semibold uppercase tracking-[0.24em] ${isActive ? "text-background/75" : "text-gold"}`}>
+                {agendaDay.day}
+              </span>
+              <span className="mt-3 block font-serif text-lg leading-snug sm:text-2xl">
+                {agendaDay.date}
+              </span>
+              <span className={`mt-2 block text-[10px] uppercase tracking-[0.16em] sm:text-xs ${isActive ? "text-background/70" : "text-muted-foreground"}`}>
+                {agendaDay.sessions.length} sessions
+              </span>
+              <span
+                aria-hidden="true"
+                className={`absolute inset-x-0 bottom-0 h-1 origin-left bg-foreground transition-transform duration-500 ${
+                  isActive ? "scale-x-100" : "scale-x-0"
+                }`}
+              />
+            </button>
+          );
+        })}
+      </div>
+
+      <section
+        key={activeDay.day}
+        id={panelId}
+        role="tabpanel"
+        aria-labelledby={`agenda-tab-${activeDayIndex + 1}`}
+        tabIndex={0}
+        className="mt-5 animate-in rounded-sm border border-gold/30 bg-background/75 fade-in-0 slide-in-from-bottom-4 duration-700 focus:outline-none sm:mt-6"
+      >
+        <div className="flex flex-col gap-2 border-b border-border/60 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-8 sm:py-6">
+          <div>
+            <p className="eyebrow">{activeDay.day} Schedule</p>
+            <h3 className="mt-2 font-serif text-2xl sm:text-3xl">{activeDay.date}</h3>
+          </div>
+          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+            {activeDay.sessions.length} curated sessions
+          </p>
+        </div>
+
+        <div className="px-5 pb-9 pt-8 sm:px-8 sm:pb-11 sm:pt-10">
+          <div className="relative">
+            <div className="absolute bottom-2 left-[224px] top-2 hidden w-px -translate-x-1/2 bg-gradient-to-b from-gold/70 via-gold/30 to-transparent md:block" />
+
+            <ul className="space-y-9 sm:space-y-10">
+              {activeDay.sessions.map((session, index) => (
+                <li
+                  key={`${activeDay.date}-${session.time}-${session.title}`}
+                  className="grid animate-in grid-cols-1 gap-3 fade-in-0 slide-in-from-bottom-2 duration-500 [animation-fill-mode:both] md:grid-cols-[180px_24px_1fr] md:gap-x-8 md:gap-y-0"
+                  style={{ animationDelay: `${100 + index * 70}ms` }}
+                >
+                  <span className="whitespace-nowrap font-serif text-xl text-gold md:pr-6 md:text-2xl">
+                    {session.time}
+                  </span>
+
+                  <span className="relative hidden items-start justify-center pt-2 md:flex">
+                    <span className="relative z-10 block h-2.5 w-2.5 rounded-full border border-gold bg-background" />
+                  </span>
+
+                  <div>
+                    <h4 className="font-serif text-xl md:text-2xl">{session.title}</h4>
+                    <p className="mt-1 text-xs uppercase tracking-[0.18em] text-muted-foreground sm:text-sm sm:tracking-[0.2em]">
+                      {session.who}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 function SummitPage() {
   return (
     <>
       {/* HERO */}
-      <section className="relative py-24 md:py-32">
+      {/* <section className="relative py-24 md:py-32">
         <div className="mx-auto max-w-6xl px-6 lg:px-10">
           <p className="eyebrow">
             The Summit &middot; ILS 2026
@@ -195,10 +325,10 @@ function SummitPage() {
             </aside>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* HIGHLIGHTS */}
-      <section className="border-t border-border/40 bg-ink/50 py-24">
+      {/* <section className="border-t border-border/40 bg-ink/50 py-24">
         <div className="mx-auto max-w-6xl px-6 lg:px-10">
           <p className="eyebrow">
             What the Day Holds
@@ -229,7 +359,7 @@ function SummitPage() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* SCHEDULE */}
       <section className="py-28">
@@ -239,80 +369,12 @@ function SummitPage() {
           </p>
 
           <h2 className="mt-4 font-serif text-4xl md:text-5xl">
-            Schedule
+            Agenda
           </h2>
 
-          {/* BOTH DAYS */}
-          <div className="mt-16 space-y-24">
-            {agenda.map((agendaDay) => (
-              <div key={agendaDay.date}>
-                
-                {/* DAY HEADING */}
-                <div className="mb-12">
-                  <p className="eyebrow">
-                    {agendaDay.day}
-                  </p>
-
-                  <h3 className="mt-3 font-serif text-3xl md:text-4xl">
-                    {agendaDay.date}
-                  </h3>
-                </div>
-
-                {/* TIMELINE */}
-                <div className="relative">
-                  
-                  {/* VERTICAL GOLD LINE */}
-                  <div className="absolute bottom-2 left-[180px] top-2 hidden w-px bg-gradient-to-b from-gold/60 via-gold/30 to-transparent md:block" />
-
-                  <ul className="space-y-10">
-                    {agendaDay.sessions.map((session) => (
-                      <li
-                        key={`${agendaDay.date}-${session.time}-${session.title}`}
-                        className="
-                          grid
-                          grid-cols-1
-                          gap-3
-                          md:grid-cols-[180px_24px_1fr]
-                          md:gap-x-8
-                          md:gap-y-0
-                        "
-                      >
-                        
-                        {/* TIME */}
-                        <span
-                          className="
-                            whitespace-nowrap
-                            font-serif
-                            text-xl
-                            text-gold
-                            md:pr-6
-                            md:text-2xl
-                          "
-                        >
-                          {session.time}
-                        </span>
-
-                        {/* TIMELINE DOT */}
-                        <span className="relative hidden items-start justify-center pt-2 md:flex">
-                          <span className="relative z-10 block h-2.5 w-2.5 rounded-full border border-gold bg-background" />
-                        </span>
-
-                        {/* SESSION CONTENT */}
-                        <div>
-                          <h4 className="font-serif text-xl md:text-2xl">
-                            {session.title}
-                          </h4>
-
-                          <p className="mt-1 text-sm uppercase tracking-[0.2em] text-muted-foreground">
-                            {session.who}
-                          </p>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            ))}
+          {/* DAY TABS AND SCHEDULE */}
+          <div className="mt-12 sm:mt-16">
+            <AgendaTabs />
           </div>
         </div>
       </section>
