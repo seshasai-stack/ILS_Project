@@ -112,7 +112,7 @@ const registrationTiers = [
     category: "Member + Spouse",
     early: "₹49,500 + GST",
     general: "₹60,000 + GST",
-    access: "Member: Day 1, Day 2 & Gala Night · Spouse / Partner: Gala Night",
+    access: "Member: Day 1, Day 2 & Gala Night\nSpouse / Partner: Gala Night",
   },
   {
     category: "Guest / Non-member",
@@ -719,7 +719,9 @@ function DayOneSpeakerReveal() {
             <Mic2 className="h-4 w-4" aria-hidden="true" />
             <span className="h-px w-10 bg-gold/60" />
           </div>
-          <p className="eyebrow mt-5">DAY-1 KEYNOTE SPEAKER</p>
+          <p className="mt-5 font-sans text-base font-medium uppercase tracking-[0.32em] text-gold sm:text-lg md:text-xl">
+            DAY-1 KEYNOTE SPEAKER
+          </p>
           <h2
             id="day-one-speaker-title"
             className="mt-4 font-serif text-4xl uppercase tracking-[0.04em] text-foreground sm:text-5xl md:text-6xl"
@@ -848,7 +850,7 @@ function RegistrationInformationSection() {
               <div className="border-r border-border px-7 py-7 text-gold">
                 {tier.general}
               </div>
-              <div className="px-7 py-7 leading-6 text-muted-foreground">
+              <div className="whitespace-pre-line px-7 py-7 leading-6 text-muted-foreground">
                 {tier.access}
               </div>
             </div>
@@ -885,7 +887,7 @@ function RegistrationInformationSection() {
                 <p className="text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
                   Access to
                 </p>
-                <p className="mt-2 text-sm leading-6 text-foreground/85">{tier.access}</p>
+                <p className="mt-2 whitespace-pre-line text-sm leading-6 text-foreground/85">{tier.access}</p>
               </div>
             </article>
           ))}

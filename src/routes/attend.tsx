@@ -591,7 +591,7 @@ function AttendPage() {
                     category: "Member + Spouse",
                     early: getRegistrationPricing("Member + Spouse").baseAmount,
                     general: 60_000,
-                    access: "Member: Day 1, Day 2 & Gala Night · Spouse / Partner: Gala Night",
+                    access: "Member: Day 1, Day 2 & Gala Night\nSpouse / Partner: Gala Night",
                   },
                   {
                     category: "Guest / Non-member",
@@ -614,7 +614,7 @@ function AttendPage() {
                     <td className="break-words border-r border-border px-2 py-4 text-gold sm:px-4 sm:py-5 lg:px-6">
                       {formatINR(tier.general)} + GST
                     </td>
-                    <td className="break-words px-2 py-4 leading-5 text-muted-foreground sm:px-4 sm:py-5 sm:leading-6 lg:px-6">{tier.access}</td>
+                    <td className="whitespace-pre-line break-words px-2 py-4 leading-5 text-muted-foreground sm:px-4 sm:py-5 sm:leading-6 lg:px-6">{tier.access}</td>
                   </tr>
                 ))}
               </tbody>
