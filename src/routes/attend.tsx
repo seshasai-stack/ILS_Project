@@ -574,8 +574,8 @@ function AttendPage() {
               <thead>
                 <tr className="bg-secondary/90 text-[10px] uppercase tracking-[0.08em] text-foreground sm:text-xs sm:tracking-[0.12em] lg:text-sm">
                   <th className="w-[30%] border-r border-border px-2 py-4 font-semibold sm:px-4 sm:py-5 lg:px-6">Category</th>
-                  <th className="w-[19%] border-r border-border px-2 py-4 font-semibold sm:px-4 sm:py-5 lg:px-6">Early Access (INR)</th>
-                  <th className="w-[19%] border-r border-border px-2 py-4 font-semibold sm:px-4 sm:py-5 lg:px-6">General (INR)</th>
+                  <th className="w-[19%] border-r border-border px-2 py-4 font-semibold sm:px-4 sm:py-5 lg:px-6">Early Access (INR / $)</th>
+                  <th className="w-[19%] border-r border-border px-2 py-4 font-semibold sm:px-4 sm:py-5 lg:px-6">General (INR / $)</th>
                   <th className="w-[32%] px-2 py-4 font-semibold sm:px-4 sm:py-5 lg:px-6">Access to</th>
                 </tr>
               </thead>
@@ -584,35 +584,55 @@ function AttendPage() {
                   {
                     category: "Member / Chapter Director / Executive Director",
                     early: getRegistrationPricing("").baseAmount,
+                    earlyUsd: 416,
                     general: 50_000,
+                    generalUsd: 527,
                     access: "Day 1, Day 2 & Gala Night",
                   },
                   {
                     category: "Member + Spouse",
                     early: getRegistrationPricing("Member + Spouse").baseAmount,
+                    earlyUsd: 522,
                     general: 60_000,
+                    generalUsd: 632,
                     access: "Member: Day 1, Day 2 & Gala Night\nSpouse / Partner: Gala Night",
                   },
                   {
                     category: "Guest / Non-member",
                     early: null,
+                    earlyUsd: null,
                     general: getRegistrationPricing("Guest / Non-member").baseAmount,
+                    generalUsd: 422,
                     access: "Day 1 & Day 2 · Gala Night not included",
                   },
                   {
                     category: "Spouse / Partner",
                     early: null,
+                    earlyUsd: null,
                     general: getRegistrationPricing("Spouse").baseAmount,
+                    generalUsd: 106,
                     access: "Gala Night",
                   },
                 ].map((tier) => (
                   <tr key={tier.category} className="border-t border-border/90 bg-background/90">
                     <td className="break-words border-r border-border px-2 py-4 font-medium text-foreground sm:px-4 sm:py-5 lg:px-6">{tier.category}</td>
                     <td className="break-words border-r border-border px-2 py-4 text-gold sm:px-4 sm:py-5 lg:px-6">
-                      {tier.early === null ? "N/A" : `${formatINR(tier.early)} + GST`}
+                      {tier.early === null ? (
+                        "N/A"
+                      ) : (
+                        <>
+                          {formatINR(tier.early)} + GST
+                          <span className="ml-1 text-[13px] font-medium leading-5 text-gold/80 sm:text-sm">
+                            (${tier.earlyUsd} + Applicable Taxes)
+                          </span>
+                        </>
+                      )}
                     </td>
                     <td className="break-words border-r border-border px-2 py-4 text-gold sm:px-4 sm:py-5 lg:px-6">
                       {formatINR(tier.general)} + GST
+                      <span className="ml-1 text-[13px] font-medium leading-5 text-gold/80 sm:text-sm">
+                        (${tier.generalUsd} + Applicable Taxes)
+                      </span>
                     </td>
                     <td className="whitespace-pre-line break-words px-2 py-4 leading-5 text-muted-foreground sm:px-4 sm:py-5 sm:leading-6 lg:px-6">{tier.access}</td>
                   </tr>

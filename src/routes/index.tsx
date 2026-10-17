@@ -105,25 +105,33 @@ const registrationTiers = [
   {
     category: "Member / Chapter Director / Executive Director",
     early: "₹39,500 + GST",
+    earlyUsd: 416,
     general: "₹50,000 + GST",
+    generalUsd: 527,
     access: "Day 1, Day 2 & Gala Night",
   },
   {
     category: "Member + Spouse",
     early: "₹49,500 + GST",
+    earlyUsd: 522,
     general: "₹60,000 + GST",
+    generalUsd: 632,
     access: "Member: Day 1, Day 2 & Gala Night\nSpouse / Partner: Gala Night",
   },
   {
     category: "Guest / Non-member",
     early: "N/A",
+    earlyUsd: null,
     general: "₹40,000 + GST",
+    generalUsd: 422,
     access: "Day 1 & Day 2 · Gala Night not included",
   },
   {
     category: "Spouse / Partner",
     early: "N/A",
+    earlyUsd: null,
     general: "₹10,000 + GST",
+    generalUsd: 106,
     access: "Gala Night",
   },
 ] as const;
@@ -831,8 +839,8 @@ function RegistrationInformationSection() {
         <div className="mt-12 hidden overflow-hidden border border-gold/30 bg-background/75 lg:block">
           <div className="grid grid-cols-[1.35fr_0.8fr_0.8fr_1.25fr] bg-surface/90 text-xs font-semibold uppercase tracking-[0.16em] text-foreground">
             <div className="border-r border-border px-7 py-6">Category</div>
-            <div className="border-r border-border px-7 py-6">Early Access (INR)</div>
-            <div className="border-r border-border px-7 py-6">General (INR)</div>
+            <div className="border-r border-border px-7 py-6">Early Access (INR / $)</div>
+            <div className="border-r border-border px-7 py-6">General (INR / $)</div>
             <div className="px-7 py-6">Access to</div>
           </div>
 
@@ -846,9 +854,17 @@ function RegistrationInformationSection() {
               </div>
               <div className="border-r border-border px-7 py-7 text-gold">
                 {tier.early}
+                {tier.earlyUsd !== null && (
+                  <span className="ml-1 text-sm font-medium leading-5 text-gold/80">
+                    (${tier.earlyUsd} + Applicable Taxes)
+                  </span>
+                )}
               </div>
               <div className="border-r border-border px-7 py-7 text-gold">
                 {tier.general}
+                <span className="ml-1 text-sm font-medium leading-5 text-gold/80">
+                  (${tier.generalUsd} + Applicable Taxes)
+                </span>
               </div>
               <div className="whitespace-pre-line px-7 py-7 leading-6 text-muted-foreground">
                 {tier.access}
@@ -874,13 +890,25 @@ function RegistrationInformationSection() {
                   <dt className="text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
                     Early Access
                   </dt>
-                  <dd className="mt-2 text-sm font-medium text-gold">{tier.early}</dd>
+                  <dd className="mt-2 text-sm font-medium leading-5 text-gold">
+                    {tier.early}
+                    {tier.earlyUsd !== null && (
+                      <span className="ml-1 text-[13px] text-gold/80 sm:text-sm">
+                        (${tier.earlyUsd} + Applicable Taxes)
+                      </span>
+                    )}
+                  </dd>
                 </div>
                 <div className="bg-background p-5">
                   <dt className="text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
                     General
                   </dt>
-                  <dd className="mt-2 text-sm font-medium text-gold">{tier.general}</dd>
+                  <dd className="mt-2 text-sm font-medium leading-5 text-gold">
+                    {tier.general}
+                    <span className="ml-1 text-[13px] text-gold/80 sm:text-sm">
+                      (${tier.generalUsd} + Applicable Taxes)
+                    </span>
+                  </dd>
                 </div>
               </dl>
               <div className="border-t border-border/60 px-5 py-5">
