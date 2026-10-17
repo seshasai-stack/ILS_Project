@@ -1157,6 +1157,194 @@ function RegistrationAccessSection() {
   );
 }
 
+const registrationGoesLiveAt = new Date(
+  "2026-11-13T10:00:00+05:30",
+).getTime();
+
+const countdownUnits = [
+  ["days", "Days"],
+  ["hours", "Hours"],
+  ["minutes", "Minutes"],
+  ["seconds", "Seconds"],
+] as const;
+
+const launchConfetti = Array.from({ length: 72 }, (_, index) => ({
+  left: `${(index * 37) % 100}%`,
+  delay: `${(index % 12) * 0.045}s`,
+  duration: `${2.5 + (index % 8) * 0.16}s`,
+  drift: `${((index * 29) % 180) - 90}px`,
+  rotation: `${360 + (index % 6) * 150}deg`,
+  color: ["#d9a842", "#f1cf7a", "#fff5d7", "#b98124", "#ffffff"][
+    index % 5
+  ],
+  width: `${5 + (index % 4) * 2}px`,
+  height: `${9 + (index % 5) * 2}px`,
+}));
+
+type CountdownValue = {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+  isLive: boolean;
+};
+
+function getRegistrationCountdown(now: number): CountdownValue {
+  const remaining = Math.max(0, registrationGoesLiveAt - now);
+
+  return {
+    days: Math.floor(remaining / 86_400_000),
+    hours: Math.floor((remaining / 3_600_000) % 24),
+    minutes: Math.floor((remaining / 60_000) % 60),
+    seconds: Math.floor((remaining / 1_000) % 60),
+    isLive: remaining === 0,
+  };
+}
+
+function RegistrationCountdown() {
+  const [countdown, setCountdown] = useState<CountdownValue | null>(null);
+  const [showCelebration, setShowCelebration] = useState(false);
+
+  useEffect(() => {
+    let intervalId: number | undefined;
+    let celebrationTimer: number | undefined;
+
+    const isConfettiPreview =
+      new URLSearchParams(window.location.search).get("testConfetti") === "1";
+
+    if (isConfettiPreview) {
+      setShowCelebration(true);
+      celebrationTimer = window.setTimeout(
+        () => setShowCelebration(false),
+        5200,
+      );
+    }
+
+    const updateCountdown = () => {
+      const nextCountdown = getRegistrationCountdown(Date.now());
+      setCountdown(nextCountdown);
+
+      if (nextCountdown.isLive) {
+        if (intervalId !== undefined) {
+          window.clearInterval(intervalId);
+          intervalId = undefined;
+        }
+
+        const celebrationKey = "ils-event-launch-celebrated-2026-11-13";
+
+        if (window.sessionStorage.getItem(celebrationKey) !== "true") {
+          window.sessionStorage.setItem(celebrationKey, "true");
+          setShowCelebration(true);
+          celebrationTimer = window.setTimeout(
+            () => setShowCelebration(false),
+            5200,
+          );
+        }
+      }
+    };
+
+    updateCountdown();
+
+    if (Date.now() < registrationGoesLiveAt) {
+      intervalId = window.setInterval(updateCountdown, 1000);
+    }
+
+    return () => {
+      if (intervalId !== undefined) window.clearInterval(intervalId);
+      if (celebrationTimer !== undefined) window.clearTimeout(celebrationTimer);
+    };
+  }, []);
+
+  const currentCountdown = countdown ?? {
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+    isLive: false,
+  };
+
+  return (
+    <>
+      <div className="mx-auto mt-8 max-w-lg" aria-label="ILS 2026 countdown">
+        <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.28em] text-gold/90 sm:text-xs">
+          Countdown to ILS 2026
+        </p>
+        <div className="grid grid-cols-4 gap-2 sm:gap-3">
+          {countdownUnits.map(([key, label]) => (
+            <div key={key} className="text-center">
+              <div
+                className={`relative overflow-hidden border border-gold/30 bg-gradient-to-b from-white/[0.12] to-white/[0.025] px-1 py-3 shadow-[0_12px_32px_rgba(0,0,0,0.38)] transition-colors duration-300 sm:py-4 ${
+                  key === "seconds" ? "border-gold/50" : ""
+                }`}
+              >
+                <span
+                  key={`${key}-${currentCountdown[key]}`}
+                  className={`block font-serif text-2xl tabular-nums text-foreground sm:text-4xl ${
+                    key === "seconds" ? "animate-pulse" : ""
+                  }`}
+                >
+                  {String(currentCountdown[key]).padStart(2, "0")}
+                </span>
+                <span className="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-black/60" />
+              </div>
+              <span className="mt-2 block text-[9px] font-medium uppercase tracking-[0.16em] text-gold sm:text-[10px] sm:tracking-[0.2em]">
+                {label}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <p className="mt-5 text-[10px] uppercase tracking-[0.22em] text-muted-foreground sm:text-xs">
+          13 November 2026 &middot; 10:00 AM IST
+        </p>
+
+        {currentCountdown.isLive && (
+          <p
+            className="mt-3 text-xs font-semibold uppercase tracking-[0.24em] text-gold"
+            aria-live="polite"
+          >
+            Registrations are live
+          </p>
+        )}
+      </div>
+
+      {showCelebration && (
+        <div
+          className="pointer-events-none fixed inset-0 z-[100] overflow-hidden"
+          aria-hidden="true"
+        >
+          <style>{`
+            @keyframes ils-confetti-fall {
+              0% { opacity: 0; transform: translate3d(0, -12vh, 0) rotate(0deg); }
+              8% { opacity: 1; }
+              100% { opacity: 0; transform: translate3d(var(--confetti-drift), 112vh, 0) rotate(var(--confetti-rotation)); }
+            }
+          `}</style>
+
+          {launchConfetti.map((piece, index) => (
+            <span
+              key={index}
+              className="absolute -top-6 block"
+              style={
+                {
+                  left: piece.left,
+                  width: piece.width,
+                  height: piece.height,
+                  backgroundColor: piece.color,
+                  animation: `ils-confetti-fall ${piece.duration} cubic-bezier(0.18, 0.75, 0.35, 1) ${piece.delay} both`,
+                  "--confetti-drift": piece.drift,
+                  "--confetti-rotation": piece.rotation,
+                } as CSSProperties
+              }
+            />
+          ))}
+
+        </div>
+      )}
+    </>
+  );
+}
+
 function Home() {
   return (
     <>
@@ -1303,6 +1491,8 @@ function Home() {
               <span className="btn-gold">Begin Your Registration</span>
             </Link>
           </div>
+
+          <RegistrationCountdown />
         </div>
       </section>
     </>
