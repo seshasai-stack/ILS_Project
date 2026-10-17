@@ -150,25 +150,25 @@ const sponsorships = [
 const agenda = [
   {
     label: "Day 01",
-    date: "13 November 2026",
+    date: "13th November 2026",
     sessions: [
-      ["10:00 AM – 11:15 AM", "Registrations & Open Networking", "Arrival & Networking"],
-      ["11:30 AM – 01:15 PM", "Keynote by Harsha Bhogle", "Speaker Session"],
-      ["01:30 PM – 02:30 PM", "Lunch", "Lunch"],
-      ["02:45 PM – 04:00 PM", "Know Your Table", "Roundtable Discussions"],
-      ["04:00 PM – 05:00 PM", "121s", "Curated One-to-One Conversations"],
-      ["05:00 PM – 07:00 PM", "Break & Leisure", "Pause & Recharge"],
-      ["07:00 PM onwards", "Gala Night", "Evening Experience"],
+      ["10:00 – 11:15 AM", "Registrations & Open Networking", "Arrival & Networking"],
+      ["11:30 – 1:15 PM", "Harsha Bhogle", "Main Keynote Speaker"],
+      ["1:30 – 2:30 PM", "Food & Fellowship", "Lunch"],
+      ["2:45 – 4:00 PM", "Know Your Table", "Roundtable Discussions"],
+      ["4:00 – 5:00 PM", "Breakout Sessions", "Curated Topics for Smaller Rooms"],
+      ["5:00 – 7:00 PM", "Break & Leisure", "Pause & Recharge"],
+      ["7:00 PM onwards", "Gala Night", "Spotlight Act - Gurleen Pannu Live"],
     ],
   },
   {
     label: "Day 02",
-    date: "14 November 2026",
+    date: "14th November 2026",
     sessions: [
-      ["10:00 AM – 11:00 AM", "121s", "Curated One-to-One Conversations"],
-      ["11:00 AM – 12:00 PM", "Keynote / Fireside Chat", "With Industry Expert"],
-      ["12:00 PM – 01:30 PM", "Startup Pitches", "Founder Showcase"],
-      ["01:30 PM – 02:30 PM", "Lunch & Closing", "Closing Session"],
+      ["10:00 – 11:00 AM", "121s", "Open Conversations"],
+      ["11:00 – 12:00 PM", "Lt Gen KJS Dhillon", "Fireside Chat"],
+      ["12:00 – 1:30 PM", "Taste of Forums", "Experience the world of forums"],
+      ["1:30 – 2:30 PM", "Lunch & Closing", "Closing Session"],
     ],
   },
 ] as const;
@@ -283,7 +283,7 @@ function SponsorshipPage() {
 
               <div className="mt-10 flex flex-wrap gap-4">
                 <a href="#packages" className="btn-gold">
-                  Explore packages <ArrowRight aria-hidden="true" className="h-4 w-4" />
+                  Explore Sponsorship Opportunities <ArrowRight aria-hidden="true" className="h-4 w-4" />
                 </a>
                 <a href={enquiryHref} className="btn-outline-gold">
                   Start a conversation
