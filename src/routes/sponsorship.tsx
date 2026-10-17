@@ -8,6 +8,15 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useState } from "react";
+import abhinavBindraImage from "@/assets/Abhinav_Bindra.jpg";
+import devduttPattanaikImage from "@/assets/Devdutt_Pattanaik.jpg";
+import jhontyRhodesImage from "@/assets/Jhonty_Rhodes.jpg";
+import kanikaTekriwalImage from "@/assets/Kanika_Tekriwal.jpg";
+import kapilDevImage from "@/assets/Kapil_Dev.jpg";
+import ktRamaRaoImage from "@/assets/KT_Rama_Rao.jpg";
+import rishikeshSrImage from "@/assets/Rishikesh_SR.jpg";
+import srikanthBollaImage from "@/assets/Srikanth_Bolla.jpg";
+import venkaiahNaiduImage from "@/assets/Venkaiah_Naidu.jpg";
 
 export const Route = createFileRoute("/sponsorship")({
   head: () => ({
@@ -174,15 +183,15 @@ const agenda = [
 ] as const;
 
 const pastSpeakers = [
-  ["KTR", "KT Rama Rao", "Former IT Minister & MLA"],
-  ["AB", "Abhinav Bindra", "India's first individual Olympic gold medallist"],
-  ["RS", "Rishikesh SR", "Co-founder of Rapido"],
-  ["SB", "Srikanth Bolla", "CEO & Founder of Bollant Industries"],
-  ["DP", "Devdutt Pattanaik", "Indian writer and illustrator"],
-  ["JR", "Jhonty Rhodes", "South African cricket coach"],
-  ["KD", "Kapil Dev", "World Cup-winning captain & cricketing icon"],
-  ["KT", "Kanika Tekriwal", "CEO & Founder of JetSetGo"],
-  ["VN", "Venkaiah Naidu", "Former Vice President of India"],
+  ["KTR", "KT Rama Rao", "Former IT Minister & MLA", ktRamaRaoImage],
+  ["AB", "Abhinav Bindra", "India's first individual Olympic gold medallist", abhinavBindraImage],
+  ["RS", "Rishikesh SR", "Co-founder of Rapido", rishikeshSrImage],
+  ["SB", "Srikanth Bolla", "CEO & Founder of Bollant Industries", srikanthBollaImage],
+  ["DP", "Devdutt Pattanaik", "Indian writer and illustrator", devduttPattanaikImage],
+  ["JR", "Jhonty Rhodes", "South African cricket coach", jhontyRhodesImage],
+  ["KD", "Kapil Dev", "World Cup-winning captain & cricketing icon", kapilDevImage],
+  ["KT", "Kanika Tekriwal", "CEO & Founder of JetSetGo", kanikaTekriwalImage],
+  ["VN", "Venkaiah Naidu", "Former Vice President of India", venkaiahNaiduImage],
 ] as const;
 
 function AgendaSection() {
@@ -476,16 +485,38 @@ function SponsorshipPage() {
             </p>
           </div>
 
-          <div className="mt-14 grid gap-px overflow-hidden border border-border/70 bg-border/70 sm:grid-cols-2 lg:grid-cols-3">
-            {pastSpeakers.map(([initials, name, role]) => (
-              <article key={name} className="group bg-background p-6 transition-colors duration-300 hover:bg-gold/[0.045] sm:p-8">
-                <div className="flex h-16 w-16 items-center justify-center border border-gold/35 bg-ink font-serif text-2xl text-gold transition-all duration-300 group-hover:border-gold group-hover:bg-gold group-hover:text-background">
-                  {initials}
+          <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {pastSpeakers.map(([initials, name, role, image]) => (
+              <article
+                key={name}
+                className="group relative isolate min-h-[360px] overflow-hidden border border-border/70 bg-ink sm:min-h-[410px]"
+              >
+                <img
+                  src={image}
+                  alt={`Temporary portrait for ${name}`}
+                  loading="lazy"
+                  decoding="async"
+                  className="absolute inset-0 h-full w-full object-cover grayscale transition duration-700 ease-out group-hover:scale-[1.045] group-hover:grayscale-0"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-black/5 transition-colors duration-500 group-hover:via-black/20" />
+                <div className="absolute inset-x-0 top-0 h-px origin-left scale-x-0 bg-gold transition-transform duration-500 group-hover:scale-x-100" />
+
+                <div className="relative flex h-full min-h-[360px] flex-col justify-between p-6 sm:min-h-[410px] sm:p-8">
+                  <div className="flex items-start justify-between">
+                    <span className="flex h-12 min-w-12 items-center justify-center border border-gold/55 bg-black/40 px-2 font-serif text-lg text-gold backdrop-blur-sm transition-colors duration-300 group-hover:bg-gold group-hover:text-black">
+                      {initials}
+                    </span>
+                    <span className="mt-1 h-2 w-2 rounded-full bg-gold opacity-0 shadow-[0_0_20px_rgba(217,168,66,0.9)] transition-opacity duration-500 group-hover:opacity-100" />
+                  </div>
+
+                  <div className="translate-y-2 transition-transform duration-500 ease-out group-hover:translate-y-0">
+                    <div className="mb-5 h-px w-10 bg-gold transition-all duration-500 group-hover:w-20" />
+                    <h3 className="font-serif text-3xl leading-tight text-white">{name}</h3>
+                    <p className="mt-3 max-w-xs text-xs font-medium uppercase leading-5 tracking-[0.14em] text-white/70">
+                      {role}
+                    </p>
+                  </div>
                 </div>
-                <h3 className="mt-6 font-serif text-2xl">{name}</h3>
-                <p className="mt-2 text-xs uppercase leading-5 tracking-[0.12em] text-muted-foreground">
-                  {role}
-                </p>
               </article>
             ))}
           </div>
