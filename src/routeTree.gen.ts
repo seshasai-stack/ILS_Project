@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AccommodationRouteImport } from './routes/accommodation'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as AttendRouteImport } from './routes/attend'
 import { Route as PartnersRouteImport } from './routes/partners'
@@ -29,6 +30,11 @@ const IndexRoute = IndexRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccommodationRoute = AccommodationRouteImport.update({
+  id: '/accommodation',
+  path: '/accommodation',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnalyticsRoute = AnalyticsRouteImport.update({
@@ -80,6 +86,7 @@ const TermsAndConditionsRoute = TermsAndConditionsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/accommodation': typeof AccommodationRoute
   '/analytics': typeof AnalyticsRoute
   '/attend': typeof AttendRoute
   '/partners': typeof PartnersRoute
@@ -93,6 +100,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/accommodation': typeof AccommodationRoute
   '/analytics': typeof AnalyticsRoute
   '/attend': typeof AttendRoute
   '/partners': typeof PartnersRoute
@@ -107,6 +115,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/accommodation': typeof AccommodationRoute
   '/analytics': typeof AnalyticsRoute
   '/attend': typeof AttendRoute
   '/partners': typeof PartnersRoute
@@ -122,6 +131,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/accommodation'
     | '/analytics'
     | '/attend'
     | '/partners'
@@ -135,6 +145,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/accommodation'
     | '/analytics'
     | '/attend'
     | '/partners'
@@ -148,6 +159,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/accommodation'
     | '/analytics'
     | '/attend'
     | '/partners'
@@ -162,6 +174,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AccommodationRoute: typeof AccommodationRoute
   AnalyticsRoute: typeof AnalyticsRoute
   AttendRoute: typeof AttendRoute
   PartnersRoute: typeof PartnersRoute
@@ -187,6 +200,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accommodation': {
+      id: '/accommodation'
+      path: '/accommodation'
+      fullPath: '/accommodation'
+      preLoaderRoute: typeof AccommodationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/analytics': {
@@ -258,6 +278,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AccommodationRoute: AccommodationRoute,
   AnalyticsRoute: AnalyticsRoute,
   AttendRoute: AttendRoute,
   PartnersRoute: PartnersRoute,

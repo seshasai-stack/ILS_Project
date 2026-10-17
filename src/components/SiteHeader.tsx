@@ -3,7 +3,13 @@ import { useEffect, useState } from "react";
 import ilsLogo from "@/assets/nav-ils-main-logo.png";
 
 type NavItem = {
-  to: "/" | "/summit" | "/speakers" | "/sponsorship" | "/about";
+  to:
+    | "/"
+    | "/summit"
+    | "/speakers"
+    | "/sponsorship"
+    | "/accommodation"
+    | "/about";
   label: string;
 };
 
@@ -12,6 +18,7 @@ const nav: readonly NavItem[] = [
   { to: "/summit", label: "Agenda" },
   { to: "/speakers", label: "Speakers" },
   { to: "/sponsorship", label: "Sponsorship" },
+  { to: "/accommodation", label: "Accommodation" },
   { to: "/about", label: "FAQ's" },
 ];
 
@@ -51,7 +58,7 @@ export function SiteHeader() {
         </Link>
 
         {/* DESKTOP */}
-        <nav className="hidden items-center gap-10 md:flex">
+        <nav className="hidden items-center gap-5 lg:flex xl:gap-8">
           {nav.map((n) => (
             <Link
               key={n.to}
@@ -72,7 +79,7 @@ export function SiteHeader() {
         </nav>
 
         {/* MOBILE MENU BUTTON */}
-        <div className="flex items-center gap-3 md:hidden">
+        <div className="flex items-center gap-3 lg:hidden">
           <button
             type="button"
             className="flex h-10 w-10 items-center justify-center text-gold sm:h-11 sm:w-11"
@@ -90,7 +97,7 @@ export function SiteHeader() {
 
       {/* MOBILE NAVIGATION */}
       {open && (
-        <div className="glass mx-4 mt-2 rounded-sm p-5 sm:mx-6 sm:p-6 md:hidden">
+        <div className="glass mx-4 mt-2 rounded-sm p-5 sm:mx-6 sm:p-6 lg:hidden">
           <nav className="flex flex-col gap-4">
             {nav.map((n) => (
               <Link
