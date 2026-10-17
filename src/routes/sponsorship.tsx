@@ -17,6 +17,7 @@ import ktRamaRaoImage from "@/assets/KT_Rama_Rao.jpg";
 import rishikeshSrImage from "@/assets/Rishikesh_SR.jpg";
 import srikanthBollaImage from "@/assets/Srikanth_Bolla.jpg";
 import venkaiahNaiduImage from "@/assets/Venkaiah_Naidu.jpg";
+import harshaBhogleImage from "@/assets/harsha-bhogle-day-1-speaker.png";
 
 export const Route = createFileRoute("/sponsorship")({
   head: () => ({
@@ -444,13 +445,13 @@ function SponsorshipPage() {
       <section className="relative overflow-hidden py-20 sm:py-24 lg:py-28">
         <div className="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-gold/[0.08] to-transparent" />
         <div className="relative mx-auto grid max-w-6xl gap-12 px-5 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-center lg:px-10">
-          <div className="relative mx-auto flex aspect-square w-full max-w-sm items-center justify-center overflow-hidden border border-gold/30 bg-ink">
-            <div className="absolute inset-6 border border-gold/10" />
-            <div className="absolute h-48 w-48 rounded-full bg-gold/10 blur-3xl" />
-            <span className="relative font-serif text-8xl text-gold/80 sm:text-9xl">HB</span>
-            <span className="absolute bottom-7 left-7 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-              Keynote · 13 November
-            </span>
+          <div className="group relative mx-auto aspect-square w-full max-w-sm overflow-hidden border border-gold/30 bg-ink p-2">
+            <img
+              src={harshaBhogleImage}
+              alt="Harsha Bhogle, Day 1 keynote speaker at India Leadership Summit 2026"
+              className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]"
+            />
+            <div className="pointer-events-none absolute inset-2 border border-gold/10" />
           </div>
 
           <div>
@@ -496,7 +497,7 @@ function SponsorshipPage() {
                   alt={`Temporary portrait for ${name}`}
                   loading="lazy"
                   decoding="async"
-                  className="absolute inset-0 h-full w-full object-cover grayscale transition duration-700 ease-out group-hover:scale-[1.045] group-hover:grayscale-0"
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.045]"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-black/5 transition-colors duration-500 group-hover:via-black/20" />
                 <div className="absolute inset-x-0 top-0 h-px origin-left scale-x-0 bg-gold transition-transform duration-500 group-hover:scale-x-100" />

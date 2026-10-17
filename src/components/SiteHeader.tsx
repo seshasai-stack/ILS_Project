@@ -3,13 +3,14 @@ import { useEffect, useState } from "react";
 import ilsLogo from "@/assets/nav-ils-main-logo.png";
 
 type NavItem = {
-  to: "/" | "/summit" | "/sponsorship" | "/about";
+  to: "/" | "/summit" | "/speakers" | "/sponsorship" | "/about";
   label: string;
 };
 
 const nav: readonly NavItem[] = [
   { to: "/", label: "Home" },
   { to: "/summit", label: "Agenda" },
+  { to: "/speakers", label: "Speakers" },
   { to: "/sponsorship", label: "Sponsorship" },
   { to: "/about", label: "FAQ's" },
 ];

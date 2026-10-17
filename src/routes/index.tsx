@@ -15,6 +15,7 @@ import harshaBhogleSpeaker from "@/assets/harsha-bhogle-day-1-speaker.png";
 import hesaLogo from "@/assets/hesa-logo.jpeg";
 import ilsMainLogo from "@/assets/ils-main-logo-v2.png";
 import ilsVideo from "@/assets/ILS-NEW-V2.mp4";
+import ltGenKjsSpeaker from "@/assets/lt_gen_kjs.jpeg";
 import { GoldParticles } from "@/components/GoldParticles";
 
 export const Route = createFileRoute("/")({
@@ -821,6 +822,138 @@ function DayOneSpeakerReveal() {
   );
 }
 
+function DayTwoSpeakerReveal() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [isActive, setIsActive] = useState(false);
+  const [hasRevealed, setHasRevealed] = useState(false);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsActive(entry.isIntersecting);
+
+        if (entry.isIntersecting) {
+          setHasRevealed(true);
+        }
+      },
+      {
+        rootMargin: "-12% 0px -12%",
+        threshold: 0.16,
+      },
+    );
+
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <section
+      ref={sectionRef}
+      className="speaker-reveal-section relative isolate overflow-hidden border-b border-border/40 bg-ink/25 py-20 sm:py-24 lg:py-32"
+      aria-labelledby="day-two-speaker-title"
+    >
+      <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_50%_36%,rgba(202,157,69,0.14),transparent_42%)]" />
+      <div className="absolute inset-x-0 top-0 -z-20 h-px bg-gradient-to-r from-transparent via-gold/55 to-transparent" />
+
+      {isActive && (
+        <>
+          <GoldParticles count={28} />
+          <div
+            className="pointer-events-none absolute inset-0 z-10 overflow-hidden"
+            aria-hidden
+          >
+            <span className="speaker-shockwave speaker-shockwave-one" />
+            <span className="speaker-shockwave speaker-shockwave-two" />
+
+            {speakerBurstParticles.map((particle, index) => (
+              <span
+                key={index}
+                className="speaker-burst-particle"
+                style={
+                  {
+                    "--speaker-particle-x": `${particle.x}px`,
+                    "--speaker-particle-y": `${particle.y}px`,
+                    "--speaker-particle-size": `${particle.size}px`,
+                    "--speaker-particle-delay": `${particle.delay}s`,
+                    "--speaker-particle-rotation": `${particle.rotation}deg`,
+                  } as CSSProperties
+                }
+              />
+            ))}
+          </div>
+        </>
+      )}
+
+      <div className="relative z-20 mx-auto max-w-6xl px-5 sm:px-6 lg:px-10">
+        <div
+          className={`mx-auto max-w-4xl text-center transition-all duration-1000 ease-out motion-reduce:transform-none motion-reduce:opacity-100 ${
+            hasRevealed
+              ? "translate-y-0 opacity-100"
+              : "translate-y-8 opacity-0"
+          }`}
+        >
+          <div className="inline-flex items-center gap-3 text-gold">
+            <span className="h-px w-10 bg-gold/60" />
+            <Mic2 className="h-4 w-4" aria-hidden="true" />
+            <span className="h-px w-10 bg-gold/60" />
+          </div>
+          <p className="mt-5 font-sans text-base font-medium uppercase tracking-[0.32em] text-gold sm:text-lg md:text-xl">
+            DAY-2 SPEAKER
+          </p>
+          <h2
+            id="day-two-speaker-title"
+            className="mt-4 font-serif text-4xl uppercase tracking-[0.04em] text-foreground sm:text-5xl md:text-6xl"
+          >
+            LT GEN KJS DHILLON
+          </h2>
+          <p className="mt-4 font-serif text-base uppercase tracking-[0.06em] sm:text-xl md:text-2xl">
+            <span className="gold-gradient-text italic">
+              PVSM, UYSM, YSM, VSM (Retd)
+            </span>
+          </p>
+        </div>
+
+        <div
+          className={`speaker-artwork-shell relative mx-auto mt-12 max-w-5xl transition-all delay-150 duration-[1200ms] ease-out motion-reduce:transform-none motion-reduce:opacity-100 sm:mt-16 ${
+            hasRevealed ? "scale-100 opacity-100" : "scale-[0.96] opacity-0"
+          }`}
+        >
+          <div className="absolute -inset-px bg-gradient-to-br from-gold/65 via-gold/10 to-gold/45" />
+          <div className="relative m-px overflow-hidden bg-black">
+            <img
+              src={ltGenKjsSpeaker}
+              alt="Lieutenant General KJS Dhillon, Day 2 speaker for India Leadership Summit 2026"
+              className="block h-auto w-full object-cover"
+            />
+            <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/5" />
+          </div>
+        </div>
+
+        <div
+          className={`mt-10 flex justify-center transition-all delay-300 duration-1000 ease-out motion-reduce:transform-none motion-reduce:opacity-100 sm:mt-12 ${
+            hasRevealed
+              ? "translate-y-0 opacity-100"
+              : "translate-y-6 opacity-0"
+          }`}
+        >
+          <Link to="/speakers" className="btn-gold group">
+            View More Speakers
+            <ArrowUpRight
+              className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+              aria-hidden="true"
+            />
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function RegistrationInformationSection() {
   return (
     <section className="border-t border-border/40 bg-ink/35 py-20 sm:py-24 lg:py-28">
@@ -1043,6 +1176,9 @@ function Home() {
 
       {/* DAY 1 KEYNOTE SPEAKER REVEAL */}
       <DayOneSpeakerReveal />
+
+      {/* DAY 2 SPEAKER REVEAL */}
+      <DayTwoSpeakerReveal />
 
       {/* SUMMIT VIDEO — autoplay on scroll, muted initially, responsive */}
       <SummitVideo />
