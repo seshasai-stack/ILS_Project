@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import heroBg from "@/assets/hero-bg.jpg";
-import harshaBhogleSpeaker from "@/assets/harsha-bhogle-day-1-speaker.jpeg";
+import harshaBhogleSpeaker from "@/assets/harsha-bhogle-day-1-speaker.png";
 import hesaLogo from "@/assets/hesa-logo.jpeg";
 import ilsMainLogo from "@/assets/ils-main-logo-v2.png";
 import ilsVideo from "@/assets/ILS-NEW-V2.mp4";
@@ -43,12 +43,12 @@ const agenda = [
       },
       {
         time: "11:30 – 1:15 PM",
-        title: "Main Keynote Speaker",
-        who: "Keynote",
+        title: "Harsha Bhogle",
+        who: "Main Keynote Speaker",
       },
       {
         time: "1:30 – 2:30 PM",
-        title: "Lunch",
+        title: "Food & Fellowship",
         who: "Lunch",
       },
       {
@@ -69,7 +69,7 @@ const agenda = [
       {
         time: "7:00 PM onwards",
         title: "Gala Night",
-        who: "Evening Experience",
+        who: "Spotlight Act - Gurleen Pannu Live",
       },
     ],
   },
@@ -80,17 +80,17 @@ const agenda = [
       {
         time: "10:00 – 11:00 AM",
         title: "121s",
-        who: "Curated One-to-One Conversations",
+        who: "Open Conversations",
       },
       {
         time: "11:00 – 12:00 PM",
-        title: "Keynote / Fireside Chat",
-        who: "With Industry Expert",
+        title: "Lt Gen KJS Dhillon",
+        who: "Fireside Chat",
       },
       {
         time: "12:00 – 1:30 PM",
-        title: "Startup Pitches",
-        who: "Founder Showcase",
+        title: "Taste of Forums",
+        who: "Experience the world of forums",
       },
       {
         time: "1:30 – 2:30 PM",
@@ -112,7 +112,7 @@ const registrationTiers = [
     category: "Member + Spouse",
     early: "₹49,500 + GST",
     general: "₹60,000 + GST",
-    access: "Member: Day 1, Day 2 & Gala Night · Spouse: Gala Night",
+    access: "Member: Day 1, Day 2 & Gala Night · Spouse / Partner: Gala Night",
   },
   {
     category: "Guest / Non-member",
@@ -121,7 +121,7 @@ const registrationTiers = [
     access: "Day 1 & Day 2 · Gala Night not included",
   },
   {
-    category: "Spouse",
+    category: "Spouse / Partner",
     early: "N/A",
     general: "₹10,000 + GST",
     access: "Gala Night",
@@ -719,13 +719,17 @@ function DayOneSpeakerReveal() {
             <Mic2 className="h-4 w-4" aria-hidden="true" />
             <span className="h-px w-10 bg-gold/60" />
           </div>
-          <p className="eyebrow mt-5">Main keynote reveal</p>
+          <p className="eyebrow mt-5">DAY-1 KEYNOTE SPEAKER</p>
           <h2
             id="day-one-speaker-title"
             className="mt-4 font-serif text-4xl uppercase tracking-[0.04em] text-foreground sm:text-5xl md:text-6xl"
           >
-            Day-1 <span className="gold-gradient-text italic">Sparker</span>
+            HARSHA BHOGLE
+            {/* <span className="gold-gradient-text italic">Sparker</span> */}
           </h2>
+          <h4 className="mt-4 font-serif text-base uppercase tracking-[0.04em] text-foreground sm:text-xl md:text-2xl">
+            <span className="gold-gradient-text italic">Indian Cricket Commentator &amp; Journalist</span>
+          </h4>
         </div>
 
         <div
@@ -762,7 +766,7 @@ function DayOneSpeakerReveal() {
             </p>
           </div>
 
-          <div className="mt-10 bg-ink/70 px-5 py-8 ring-1 ring-inset ring-gold/20 sm:px-8 sm:py-10">
+          {/* <div className="mt-10 bg-ink/70 px-5 py-8 ring-1 ring-inset ring-gold/20 sm:px-8 sm:py-10">
             <p className="text-xs uppercase tracking-[0.24em] text-gold">
               Ladies and Gentlemen
             </p>
@@ -773,7 +777,7 @@ function DayOneSpeakerReveal() {
             <p className="mt-3 text-sm uppercase tracking-[0.18em] text-muted-foreground">
               Indian Cricket Commentator and Journalist
             </p>
-          </div>
+          </div> */}
 
           <div className="mt-8 grid gap-3 sm:grid-cols-2">
             <a
@@ -789,7 +793,7 @@ function DayOneSpeakerReveal() {
               />
             </a>
             <a
-              href="https://www.harshabhogle.com/biograph"
+              href="https://en.wikipedia.org/wiki/Harsha_Bhogle"
               target="_blank"
               rel="noopener noreferrer"
               className="group flex min-h-16 items-center justify-between border border-border bg-surface/35 px-5 py-4 text-xs uppercase tracking-[0.16em] text-foreground transition-all duration-300 hover:border-gold/70 hover:text-gold sm:text-sm"
@@ -1119,7 +1123,7 @@ function Home() {
 
       {/* REGISTRATION PRICING AND ACCESS */}
       <RegistrationInformationSection />
-      <RegistrationAccessSection />
+      {/* <RegistrationAccessSection /> */}
 
       {/* CTA STRIP */}
       <section className="relative overflow-hidden border-t border-border/40 bg-ink py-20 sm:py-24">

@@ -591,7 +591,7 @@ function AttendPage() {
                     category: "Member + Spouse",
                     early: getRegistrationPricing("Member + Spouse").baseAmount,
                     general: 60_000,
-                    access: "Member: Day 1, Day 2 & Gala Night · Spouse: Gala Night",
+                    access: "Member: Day 1, Day 2 & Gala Night · Spouse / Partner: Gala Night",
                   },
                   {
                     category: "Guest / Non-member",
@@ -600,7 +600,7 @@ function AttendPage() {
                     access: "Day 1 & Day 2 · Gala Night not included",
                   },
                   {
-                    category: "Spouse",
+                    category: "Spouse / Partner",
                     early: null,
                     general: getRegistrationPricing("Spouse").baseAmount,
                     access: "Gala Night",

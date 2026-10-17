@@ -49,18 +49,18 @@ const agenda = [
     date: "13th November 2026",
     sessions: [
       {
-        time: "10:30 – 11:45 AM",
+        time: "10:00 – 11:15 AM",
         title: "Registrations & Open Networking",
         who: "Arrival & Networking",
       },
       {
-        time: "12:00 – 1:30 PM",
-        title: "Main Keynote Speaker",
-        who: "Keynote",
+        time: "11:30 – 1:15 PM",
+        title: "Harsha Bhogle",
+        who: "Main Keynote Speaker",
       },
       {
         time: "1:30 – 2:30 PM",
-        title: "Lunch",
+        title: "Food & Fellowship",
         who: "Lunch",
       },
       {
@@ -81,7 +81,7 @@ const agenda = [
       {
         time: "7:00 PM onwards",
         title: "Gala Night",
-        who: "Evening Experience",
+        who: "Spotlight Act - Gurleen Pannu Live",
       },
     ],
   },
@@ -92,17 +92,17 @@ const agenda = [
       {
         time: "10:00 – 11:00 AM",
         title: "121s",
-        who: "Curated One-to-One Conversations",
+        who: "Open Conversations",
       },
       {
         time: "11:00 – 12:00 PM",
-        title: "Keynote / Fireside Chat",
-        who: "With Industry Expert",
+        title: "Lt Gen KJS Dhillon",
+        who: "Fireside Chat",
       },
       {
         time: "12:00 – 1:30 PM",
-        title: "Startup Pitches",
-        who: "Founder Showcase",
+        title: "Taste of Forums",
+        who: "Experience the world of forums",
       },
       {
         time: "1:30 – 2:30 PM",
