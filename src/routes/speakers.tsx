@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, ArrowUpRight, Mic2 } from "lucide-react";
 import gurleenPannuImage from "@/assets/gurleen_pannu.jpg";
-import harshaBhogleSpeaker from "@/assets/harsha-bhogle-day-1-speaker.jpeg";
+import harshaBhogleSpeaker from "@/assets/harsha-bhogle-day-1-speaker.png";
 import ltGenKjsSpeaker from "@/assets/lt_gen_kjs.jpeg";
 import navneethKrishnaImage from "@/assets/NAVNEETH_KRISHNA.jpg";
 
@@ -50,7 +50,7 @@ function SpeakerSection({
             <span className="h-px w-10 bg-gold/60" />
           </div>
 
-          <p className="mt-5 font-sans text-base font-medium uppercase tracking-[0.32em] text-gold sm:text-lg md:text-xl">
+          <p className="mt-5 font-sans text-lg font-medium uppercase tracking-[0.32em] text-gold sm:text-xl md:text-2xl">
             {day}
           </p>
           <h2 className="mt-4 font-serif text-4xl uppercase tracking-[0.04em] text-foreground sm:text-5xl md:text-6xl">
@@ -159,7 +159,9 @@ function SpeakersPage() {
       <section className="border-t border-border/40 bg-ink/20 py-20 sm:py-24 lg:py-28">
         <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10">
           <div className="mx-auto max-w-3xl text-center">
-            <p className="eyebrow">More voices at ILS 2026</p>
+            <p className="font-sans text-sm font-medium uppercase tracking-[0.32em] text-gold sm:text-base md:text-lg">
+              More voices at ILS 2026
+            </p>
             <h2 className="mt-5 font-serif text-4xl leading-tight sm:text-5xl">
               The stage extends beyond the keynote.
             </h2>

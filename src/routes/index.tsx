@@ -728,7 +728,7 @@ function DayOneSpeakerReveal() {
             <Mic2 className="h-4 w-4" aria-hidden="true" />
             <span className="h-px w-10 bg-gold/60" />
           </div>
-          <p className="mt-5 font-sans text-base font-medium uppercase tracking-[0.32em] text-gold sm:text-lg md:text-xl">
+          <p className="mt-5 font-sans text-lg font-medium uppercase tracking-[0.32em] text-gold sm:text-xl md:text-2xl">
             DAY-1 KEYNOTE SPEAKER
           </p>
           <h2
@@ -902,7 +902,7 @@ function DayTwoSpeakerReveal() {
             <Mic2 className="h-4 w-4" aria-hidden="true" />
             <span className="h-px w-10 bg-gold/60" />
           </div>
-          <p className="mt-5 font-sans text-base font-medium uppercase tracking-[0.32em] text-gold sm:text-lg md:text-xl">
+          <p className="mt-5 font-sans text-lg font-medium uppercase tracking-[0.32em] text-gold sm:text-xl md:text-2xl">
             DAY-2 SPEAKER
           </p>
           <h2
@@ -1265,21 +1265,21 @@ function RegistrationCountdown() {
 
   return (
     <>
-      <div className="mx-auto mt-8 max-w-lg" aria-label="ILS 2026 countdown">
-        <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.28em] text-gold/90 sm:text-xs">
+      <div className="mx-auto mt-10 max-w-2xl" aria-label="ILS 2026 countdown">
+        <p className="mb-5 text-xs font-semibold uppercase tracking-[0.28em] text-gold/90 sm:text-sm">
           Countdown to ILS 2026
         </p>
-        <div className="grid grid-cols-4 gap-2 sm:gap-3">
+        <div className="grid grid-cols-4 gap-2.5 sm:gap-4">
           {countdownUnits.map(([key, label]) => (
             <div key={key} className="text-center">
               <div
-                className={`relative overflow-hidden border border-gold/30 bg-gradient-to-b from-white/[0.12] to-white/[0.025] px-1 py-3 shadow-[0_12px_32px_rgba(0,0,0,0.38)] transition-colors duration-300 sm:py-4 ${
+                className={`relative overflow-hidden border border-gold/30 bg-gradient-to-b from-white/[0.12] to-white/[0.025] px-2 py-5 shadow-[0_14px_36px_rgba(0,0,0,0.42)] transition-colors duration-300 sm:py-7 ${
                   key === "seconds" ? "border-gold/50" : ""
                 }`}
               >
                 <span
                   key={`${key}-${currentCountdown[key]}`}
-                  className={`block font-serif text-2xl tabular-nums text-foreground sm:text-4xl ${
+                  className={`block font-serif text-4xl tabular-nums leading-none text-foreground sm:text-5xl md:text-6xl ${
                     key === "seconds" ? "animate-pulse" : ""
                   }`}
                 >
@@ -1287,14 +1287,14 @@ function RegistrationCountdown() {
                 </span>
                 <span className="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-black/60" />
               </div>
-              <span className="mt-2 block text-[9px] font-medium uppercase tracking-[0.16em] text-gold sm:text-[10px] sm:tracking-[0.2em]">
+              <span className="mt-3 block text-[10px] font-medium uppercase tracking-[0.16em] text-gold sm:text-xs sm:tracking-[0.2em]">
                 {label}
               </span>
             </div>
           ))}
         </div>
 
-        <p className="mt-5 text-[10px] uppercase tracking-[0.22em] text-muted-foreground sm:text-xs">
+        <p className="mt-7 text-xs uppercase tracking-[0.22em] text-muted-foreground sm:text-sm">
           13 November 2026 &middot; 10:00 AM IST
         </p>
 

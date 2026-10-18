@@ -6,7 +6,7 @@ import {
   ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 import {
-  Activity, ChevronDown, ChevronLeft, ChevronRight, IndianRupee,
+  Activity, ChevronDown, ChevronLeft, ChevronRight, Download, IndianRupee,
   LockKeyhole, RefreshCw, Search, TrendingUp, Users,
 } from "lucide-react";
 
@@ -60,6 +60,18 @@ const displayDate = (value: string | null) => value
   ? new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" }).format(new Date(value))
   : "-";
 
+const csvCell = (value: unknown) => {
+  const raw = value === null || value === undefined ? "" : String(value);
+  const safe = /^[=+\-@]/.test(raw) ? `'${raw}` : raw;
+  return `"${safe.replace(/"/g, '""')}"`;
+};
+
+const csvHeading = (value: string) => value
+  .replace(/([A-Z])/g, " $1")
+  .replace(/[._-]+/g, " ")
+  .replace(/^\w|\s\w/g, (character) => character.toUpperCase())
+  .trim();
+
 function AnalyticsPage() {
   const [accessKey, setAccessKey] = useState("");
   const [draftKey, setDraftKey] = useState("");
@@ -68,6 +80,7 @@ function AnalyticsPage() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("ALL");
   const [loading, setLoading] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -100,6 +113,76 @@ function AnalyticsPage() {
   }, [accessKey, page, search, status]);
 
   useEffect(() => { void load(); }, [load]);
+
+  const exportCsv = useCallback(async () => {
+    if (!accessKey || exporting) return;
+    setExporting(true);
+    setError("");
+
+    try {
+      const fetchPage = async (exportPage: number) => {
+        const params = new URLSearchParams({
+          page: String(exportPage),
+          pageSize: "100",
+          search,
+          status,
+        });
+        const response = await fetch(`${API_BASE_URL}/api/analytics/overview?${params}`, {
+          headers: { "X-Analytics-Key": accessKey },
+        });
+        const result = await response.json().catch(() => null) as AnalyticsResponse | null;
+        if (!response.ok || !result?.success) {
+          throw new Error((result as { message?: string } | null)?.message || "Unable to export analytics");
+        }
+        return result;
+      };
+
+      const firstPage = await fetchPage(1);
+      const rows = [...firstPage.table.rows];
+      for (let exportPage = 2; exportPage <= firstPage.table.pagination.totalPages; exportPage += 1) {
+        const nextPage = await fetchPage(exportPage);
+        rows.push(...nextPage.table.rows);
+      }
+
+      if (!rows.length) throw new Error("No matching registration records to export");
+
+      const applicantKeys = Array.from(new Set(rows.flatMap((row) => Object.keys(row.applicant)))).sort();
+      const paymentKeys = Array.from(new Set(rows.flatMap((row) => Object.keys(row.payment)))).sort();
+      const columns: Array<{ heading: string; value: (row: AnalyticsRow) => unknown }> = [
+        { heading: "Record ID", value: (row) => row.id },
+        { heading: "Order ID", value: (row) => row.orderId },
+        { heading: "Created At", value: (row) => row.createdAt },
+        { heading: "Verified At", value: (row) => row.verifiedAt },
+        ...applicantKeys.map((key) => ({
+          heading: `Applicant ${csvHeading(key)}`,
+          value: (row: AnalyticsRow) => row.applicant[key] ?? "",
+        })),
+        ...paymentKeys.map((key) => ({
+          heading: `Payment ${csvHeading(key)}`,
+          value: (row: AnalyticsRow) => row.payment[key] ?? "",
+        })),
+      ];
+
+      const csv = [
+        columns.map((column) => csvCell(column.heading)).join(","),
+        ...rows.map((row) => columns.map((column) => csvCell(column.value(row))).join(",")),
+      ].join("\r\n");
+      const blob = new Blob(["\uFEFF", csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const date = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date());
+      link.href = url;
+      link.download = `ils-registrations-${date}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Unable to export analytics");
+    } finally {
+      setExporting(false);
+    }
+  }, [accessKey, exporting, search, status]);
 
   if (!accessKey) {
     return (
@@ -137,6 +220,15 @@ function AnalyticsPage() {
           </div>
           <div className="flex items-center gap-3">
             <span className="text-xs text-muted-foreground">{data ? `Updated ${displayDate(data.generatedAt)}` : "Loading data"}</span>
+            <button
+              type="button"
+              onClick={() => void exportCsv()}
+              disabled={!data || loading || exporting}
+              className="inline-flex h-11 items-center gap-2 rounded-sm border border-gold/45 px-4 text-xs font-semibold uppercase tracking-[0.14em] text-gold transition hover:border-gold hover:bg-gold/10 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <Download size={16} aria-hidden="true" />
+              {exporting ? "Exporting…" : "Export CSV"}
+            </button>
             <button onClick={() => void load()} disabled={loading} className="flex h-11 w-11 items-center justify-center rounded-sm border border-border text-gold transition hover:border-gold disabled:opacity-50" aria-label="Refresh analytics"><RefreshCw size={17} className={loading ? "animate-spin" : ""} /></button>
           </div>
         </header>

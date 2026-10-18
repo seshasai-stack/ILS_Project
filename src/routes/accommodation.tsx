@@ -8,7 +8,7 @@ import {
   MapPin,
   UsersRound,
 } from "lucide-react";
-import venueImage from "@/assets/venue.jpg";
+import venueImage from "@/assets/novotel.jpg";
 
 export const Route = createFileRoute("/accommodation")({
   head: () => ({
@@ -82,6 +82,28 @@ function AccommodationPage() {
             <span className="absolute bottom-6 left-6 border border-gold/45 bg-black/70 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-gold backdrop-blur-sm">
               Official Event Venue
             </span>
+          </div>
+        </div>
+      </section>
+
+      <section className="pb-20 sm:pb-24 lg:pb-28" aria-label="Venue location">
+        <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
+          <div className="relative overflow-hidden border border-gold/30 bg-ink p-2">
+            <iframe
+              title="Map showing Novotel Hyderabad Convention Centre"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6731.742119253394!2d78.3668039567509!3d17.474178452745573!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb92320a27f5a9%3A0xf7ffe9c0885c159b!2sNovotel%20Hyderabad%20Convention%20Centre!5e1!3m2!1sen!2sin!4v1792309748889!5m2!1sen!2sin"
+              className="h-[360px] w-full border-0 sm:h-[440px] lg:h-[520px]"
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="strict-origin-when-cross-origin"
+            />
+            <div className="pointer-events-none absolute inset-2 ring-1 ring-inset ring-white/10" />
+            <div className="pointer-events-none absolute left-6 top-6 flex items-center gap-3 border border-gold/45 bg-black/75 px-4 py-3 text-gold backdrop-blur-sm">
+              <MapPin className="h-4 w-4" aria-hidden="true" />
+              <span className="text-[10px] font-semibold uppercase tracking-[0.22em]">
+                Find the venue
+              </span>
+            </div>
           </div>
         </div>
       </section>
