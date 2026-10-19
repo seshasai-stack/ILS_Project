@@ -4,6 +4,7 @@ import {
   BedDouble,
   Check,
   Coffee,
+  Download,
   Mail,
   MapPin,
   UsersRound,
@@ -41,6 +42,19 @@ const roomOptions = [
   },
 ] as const;
 
+const ACCOMMODATION_GUIDE_URL = "/downloads/ILS-Accommodation-Guide-INR.pdf";
+
+function openAndDownloadAccommodationGuide() {
+  window.open(ACCOMMODATION_GUIDE_URL, "_blank", "noopener,noreferrer");
+
+  const downloadLink = document.createElement("a");
+  downloadLink.href = ACCOMMODATION_GUIDE_URL;
+  downloadLink.download = "ILS-Accommodation-Guide-INR.pdf";
+  document.body.appendChild(downloadLink);
+  downloadLink.click();
+  downloadLink.remove();
+}
+
 function AccommodationPage() {
   return (
     <>
@@ -69,6 +83,20 @@ function AccommodationPage() {
                   Hitech City, Hyderabad
                 </p>
               </div>
+            </div>
+
+            <div className="mt-8">
+              <button
+                type="button"
+                onClick={openAndDownloadAccommodationGuide}
+                className="btn-gold inline-flex items-center gap-3"
+              >
+                Accommodation Guide
+                <Download className="h-4 w-4" aria-hidden="true" />
+              </button>
+              <p className="mt-3 text-xs leading-5 text-muted-foreground">
+                Opens the guide in a new tab and downloads a copy.
+              </p>
             </div>
           </div>
 

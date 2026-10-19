@@ -988,14 +988,14 @@ function RegistrationInformationSection() {
               <div className="border-r border-border px-7 py-7 text-gold">
                 {tier.early}
                 {tier.earlyUsd !== null && (
-                  <span className="ml-1 text-sm font-medium leading-5 text-gold/80">
+                  <span className="mt-1 block text-sm font-medium leading-5 text-gold/80">
                     (${tier.earlyUsd} + Applicable Taxes)
                   </span>
                 )}
               </div>
               <div className="border-r border-border px-7 py-7 text-gold">
                 {tier.general}
-                <span className="ml-1 text-sm font-medium leading-5 text-gold/80">
+                <span className="mt-1 block text-sm font-medium leading-5 text-gold/80">
                   (${tier.generalUsd} + Applicable Taxes)
                 </span>
               </div>
@@ -1026,7 +1026,7 @@ function RegistrationInformationSection() {
                   <dd className="mt-2 text-sm font-medium leading-5 text-gold">
                     {tier.early}
                     {tier.earlyUsd !== null && (
-                      <span className="ml-1 text-[13px] text-gold/80 sm:text-sm">
+                      <span className="mt-1 block text-[13px] text-gold/80 sm:text-sm">
                         (${tier.earlyUsd} + Applicable Taxes)
                       </span>
                     )}
@@ -1038,7 +1038,7 @@ function RegistrationInformationSection() {
                   </dt>
                   <dd className="mt-2 text-sm font-medium leading-5 text-gold">
                     {tier.general}
-                    <span className="ml-1 text-[13px] text-gold/80 sm:text-sm">
+                    <span className="mt-1 block text-[13px] text-gold/80 sm:text-sm">
                       (${tier.generalUsd} + Applicable Taxes)
                     </span>
                   </dd>

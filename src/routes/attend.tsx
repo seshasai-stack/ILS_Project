@@ -622,7 +622,7 @@ function AttendPage() {
                       ) : (
                         <>
                           {formatINR(tier.early)} + GST
-                          <span className="ml-1 text-[13px] font-medium leading-5 text-gold/80 sm:text-sm">
+                          <span className="mt-1 block text-[13px] font-medium leading-5 text-gold/80 sm:text-sm">
                             (${tier.earlyUsd} + Applicable Taxes)
                           </span>
                         </>
@@ -630,7 +630,7 @@ function AttendPage() {
                     </td>
                     <td className="break-words border-r border-border px-2 py-4 text-gold sm:px-4 sm:py-5 lg:px-6">
                       {formatINR(tier.general)} + GST
-                      <span className="ml-1 text-[13px] font-medium leading-5 text-gold/80 sm:text-sm">
+                      <span className="mt-1 block text-[13px] font-medium leading-5 text-gold/80 sm:text-sm">
                         (${tier.generalUsd} + Applicable Taxes)
                       </span>
                     </td>
