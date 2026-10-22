@@ -154,6 +154,17 @@ function SpeakersPage() {
         designation="PVSM, UYSM, YSM, VSM (Retd)"
         image={ltGenKjsSpeaker}
         imageAlt="Lieutenant General KJS Dhillon, Day 2 speaker for India Leadership Summit 2026"
+        description="A Glimpse Of Our Distinguished Day 2 Speaker."
+        links={[
+          {
+            label: "Hindi Version",
+            href: "https://youtube.com/shorts/A8qr7b_ZlN4?si=NIfSte_WIXoQPQxC",
+          },
+          {
+            label: "English Version",
+            href: "https://www.instagram.com/reel/DeHN6mMguZo/?psln=MXB2Nm80dGxvamY3Nw==",
+          },
+        ]}
       />
 
       <section className="border-t border-border/40 bg-ink/20 py-20 sm:py-24 lg:py-28">

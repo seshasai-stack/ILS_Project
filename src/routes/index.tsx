@@ -935,7 +935,46 @@ function DayTwoSpeakerReveal() {
         </div>
 
         <div
-          className={`mt-10 flex justify-center transition-all delay-300 duration-1000 ease-out motion-reduce:transform-none motion-reduce:opacity-100 sm:mt-12 ${
+          className={`mx-auto mt-10 max-w-4xl transition-all delay-300 duration-1000 ease-out motion-reduce:transform-none motion-reduce:opacity-100 sm:mt-12 ${
+            hasRevealed
+              ? "translate-y-0 opacity-100"
+              : "translate-y-8 opacity-0"
+          }`}
+        >
+          <p className="border-l border-gold/55 pl-5 font-serif text-xl leading-relaxed text-foreground sm:pl-8 sm:text-2xl">
+            A Glimpse Of Our Distinguished Day 2 Speaker.
+          </p>
+
+          <div className="mt-8 grid gap-3 sm:grid-cols-2">
+            <a
+              href="https://youtube.com/shorts/A8qr7b_ZlN4?si=NIfSte_WIXoQPQxC"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex min-h-16 items-center justify-between border border-gold/35 bg-gold/[0.04] px-5 py-4 text-xs uppercase tracking-[0.16em] text-gold transition-all duration-300 hover:border-gold hover:bg-gold/[0.09] sm:text-sm"
+            >
+              Hindi Version
+              <ArrowUpRight
+                className="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1"
+                aria-hidden="true"
+              />
+            </a>
+            <a
+              href="https://www.instagram.com/reel/DeHN6mMguZo/?psln=MXB2Nm80dGxvamY3Nw=="
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex min-h-16 items-center justify-between border border-border bg-surface/35 px-5 py-4 text-xs uppercase tracking-[0.16em] text-foreground transition-all duration-300 hover:border-gold/70 hover:text-gold sm:text-sm"
+            >
+              English Version
+              <ArrowUpRight
+                className="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1"
+                aria-hidden="true"
+              />
+            </a>
+          </div>
+        </div>
+
+        <div
+          className={`mt-10 flex justify-center transition-all delay-500 duration-1000 ease-out motion-reduce:transform-none motion-reduce:opacity-100 sm:mt-12 ${
             hasRevealed
               ? "translate-y-0 opacity-100"
               : "translate-y-6 opacity-0"
